@@ -1,0 +1,12 @@
+Debug: true
+Slots:
+  MainHand: 'MainHand'
+  Register:
+    36: 'Boots'
+    37: 'Leggings'
+    38: 'Chest'
+    39: 'Helmet'
+    40: 'OffHand'
+StatusInfo:
+  - '&f&l%player_name% &bStatusInfo'
+  - '&8PhysicalDamage: &f%Arathoth_PhysicalDamage%'

@@ -1,0 +1,11 @@
+name: Arathoth
+version: 0.0.1-SNAPSHOT
+main: ink.rainbowbridge.arathoth.Arathoth
+softdepend:  [ PlaceHolderAPI ]
+authors: [ ColdRain_Moro ]
+description: Powful Itemlore-Attribute Plugin
+website: rainbowbridge.ink
+commands:
+  Arathoth:
+    usage: /Arathoth
+    aliases: [ Ara ]
