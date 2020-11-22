@@ -51,7 +51,7 @@ public final class Arathoth extends JavaPlugin {
             SendUtils.warn("PlaceHolderAPI &4not found!");
         }
         DrawFucker.fuck();
-        AttributeManager.register("ExampleAttr",this,"[Value] Attr",10);
+        AttributeManager.register("ExampleAttr",this);
     }
 
     @Override
@@ -75,5 +75,10 @@ public final class Arathoth extends JavaPlugin {
         if(isDebug()){
             Bukkit.getConsoleSender().sendMessage(prefix + Debugmsg.replaceAll("&","§"));
         }
+    }
+
+    public static void ConfigurationDefaultSet(String Name,FileConfiguration file){
+       file.set(Name + ".Pattern","[VALUE] " + Name);
+       file.set(Name + ".Enable",true);
     }
 }

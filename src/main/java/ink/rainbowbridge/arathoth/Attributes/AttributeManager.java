@@ -1,11 +1,14 @@
 package ink.rainbowbridge.arathoth.Attributes;
 
 import ink.rainbowbridge.arathoth.Arathoth;
+import ink.rainbowbridge.arathoth.Rules.LevelRequire;
 import ink.rainbowbridge.arathoth.Utils.ItemUtils;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,20 +25,53 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AttributeManager {
-    public static Plugin plugin = Bukkit.getPluginManager().getPlugin("Arathoth");
-    public static void register(String Name,Plugin plugin,String Pattern,Integer Priority){
-        if(AttributesData.RegisteredAttr != null && AttributesData.RegisteredAttr.containsKey(Name)) {
-            AttributesData.RegisteredAttr.put(Name, plugin.getName());
-            AttributesData.Patterns.put(Name,Pattern);
-            AttributesData.Priority.put(Name,Priority);
-            SendUtils.info("&fAttribute &8" + Name + "&fhas been existed,cover it......");
+    public static Plugin plugin = Arathoth.getInstance();
+    public static void register(String Name, Plugin plugin){
+        File File = new File(Arathoth.getInstance().getDataFolder(), "Attributes/" + Name + ".yml");
+        FileConfiguration file = null;
+        if(File.exists()){
+            file = YamlConfiguration.loadConfiguration(File);
         }
         else{
-            AttributesData.RegisteredAttr.put(Name, plugin.getName());
-            AttributesData.Patterns.put(Name,Pattern);
-            AttributesData.Priority.put(Name,Priority);
+            FileWriter fw = null;
+            PrintWriter out = null;
+            try {
+                File.createNewFile();
+                fw = new FileWriter(File);
+                out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
+                out.write("# Arathoth Attributes Configuration");
+                out.write("# @Author Freeze003(寒雨)");
+                out.flush();
+                out.close();
+                fw.close();
+                file = YamlConfiguration.loadConfiguration(File);
+                Arathoth.ConfigurationDefaultSet(Name,file);
+            } catch (IOException e) {
+
+            }
         }
-        SendUtils.info("&fAttribute Registered: &8"+Name+" &fFrom: &8"+plugin.getName() + " &fPriority: &8"+Priority);
+        try{
+            file.save(File);
+        } catch (IOException e) {
+
+        }
+        if(file.getString(Name + ".Pattern") != null && file.get(Name + ".Enable") != null) {
+            if (AttributesData.RegisteredAttr != null && AttributesData.RegisteredAttr.containsKey(Name)) {
+                AttributesData.RegisteredAttr.put(Name, plugin.getName());
+                AttributesData.Patterns.put(Name, file.getString(Name + ".Pattern"));
+                SendUtils.info("&fAttribute &8" + Name + "&fhas been existed,cover it......");
+            } else {
+                AttributesData.RegisteredAttr.put(Name, plugin.getName());
+                AttributesData.Patterns.put(Name, file.getString(Name + ".Pattern"));
+            }
+            SendUtils.info("&fAttribute Registered: &8" + Name + " &fFrom: &8" + plugin.getName());
+            if (!file.getBoolean(Name + ".Enable")) {
+                DisableAttr(Name);
+            }
+        }
+        else{
+            SendUtils.warn("Attribute &4"+Name+" &cFailed to register &8(Configuration Exception)");
+        }
     }
 
     public static void DisableAttr(String Name){
@@ -51,18 +89,24 @@ public class AttributeManager {
     public static Double[] ParseNumber(String Attribute,List<String> uncoloredlores){
         Double[] value = {0D,0D,0D};
         if(AttributesData.RegisteredAttr.containsKey(Attribute)) {
-            Pattern Pattern = java.util.regex.Pattern.compile(AttributesData.Patterns.get(Attribute).replace("[VALUE]","((\\-|\\+)?\\d+(\\.\\d+)?)"));
+            Pattern Pattern = java.util.regex.Pattern.compile(AttributesData.Patterns.get(Attribute).replace("[VALUE]","((\\+|\\-)?(\\d+(\\.\\d+)?))((\\-)(\\d+(\\.\\d+)?))?"));
+            Pattern persent = java.util.regex.Pattern.compile(AttributesData.Patterns.get(Attribute).replace("[VALUE]","((\\+|\\-)?(\\d+(\\.\\d+)?))%"));
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     for (String str : uncoloredlores) {
                         Matcher m = Pattern.matcher(str);
+                        Matcher m2 = persent.matcher(str);
                         if(m.find()){
-                            value[1] = value[1] + Double.valueOf(m.group(1));
+                            value[1] += Double.valueOf(m.group(1));
+                            value[2] += Double.valueOf(m.group(5));
+                        }
+                        if (m2.find()){
+                            value[3] += Double.valueOf(m.group(1));
                         }
                     }
                 }
-            }.runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("Arathoth"));
+            }.runTaskAsynchronously(plugin);
         }
         return value;
     }
@@ -96,7 +140,7 @@ public class AttributeManager {
                     }
                     Arathoth.Debug("Status Update: &f"+(System.currentTimeMillis() - time)+"ms &8("+e.getType()+")");
                 }
-            }.runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("Arathoth"));
+            }.runTaskAsynchronously(plugin);
 
         }
         else{
@@ -120,9 +164,12 @@ public class AttributeManager {
                     }
                     for(ItemStack item : items){
                         if(ItemUtils.hasLore(item)){
-                            List<String> coloredlores = item.getItemMeta().getLore();
-                            for(String lore : coloredlores){
-                                uncoloredlores.add(ChatColor.stripColor(lore));
+                            //TODO RulesPassorNot
+                            if(LevelRequire.LevelRequirePass(p,item)) {
+                                List<String> coloredlores = item.getItemMeta().getLore();
+                                for (String lore : coloredlores) {
+                                    uncoloredlores.add(ChatColor.stripColor(lore));
+                                }
                             }
                         }
                         for(String attr : AttributesData.RegisteredAttr.keySet()){
@@ -132,7 +179,7 @@ public class AttributeManager {
                     }
                     Arathoth.Debug("Status Update: &f"+(System.currentTimeMillis() - time)+"ms &8("+p.getName()+")");
                 }
-            }.runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("Arathoth"));
+            }.runTaskAsynchronously(plugin);
 
         }
     }
