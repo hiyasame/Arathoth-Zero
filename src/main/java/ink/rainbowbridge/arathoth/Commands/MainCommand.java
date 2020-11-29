@@ -12,7 +12,7 @@ public class MainCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("Arathoth.admin")){
             sender.sendMessage("&f&lArathoth &7- &7&lby.&8&l寒雨".replaceAll("&","§"));
-            sender.sendMessage("&7Version: &f0.0.2.2020.11.29".replaceAll("&","§"));
+            sender.sendMessage("&7Version: &f0.0.3.2020.11.29".replaceAll("&","§"));
             return true;
         }
         else{

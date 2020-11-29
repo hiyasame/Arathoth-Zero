@@ -66,7 +66,7 @@ public class AdditionalHealth implements SubAttribute {
                 }
             }
         }.runTaskAsynchronously(Arathoth.getInstance());
-        return new Double[0];
+        return value;
     }
 
     @Override

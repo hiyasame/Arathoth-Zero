@@ -4,7 +4,9 @@ import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
 import ink.rainbowbridge.arathoth.Attributes.AttributesData;
 import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
 import ink.rainbowbridge.arathoth.Attributes.sub.AdditionalHealth;
+import ink.rainbowbridge.arathoth.Attributes.sub.PhysicalDamage;
 import ink.rainbowbridge.arathoth.Commands.MainCommand;
+import ink.rainbowbridge.arathoth.Listener.AttributeListener;
 import ink.rainbowbridge.arathoth.Listener.StatusUpdateListeners;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.sub.LevelRequired;
@@ -21,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 
 public final class Arathoth extends JavaPlugin {
@@ -29,6 +32,7 @@ public final class Arathoth extends JavaPlugin {
    private static Arathoth instance;
    public static Arathoth getInstance() {return instance;}
    public static List<SubAttribute> Priority = new ArrayList<>();
+   public static Random random = new Random();
 
 
     @Override
@@ -62,6 +66,7 @@ public final class Arathoth extends JavaPlugin {
         }
         DrawFucker.fuck();
         Bukkit.getPluginManager().registerEvents(new StatusUpdateListeners(),this);
+        Bukkit.getPluginManager().registerEvents(new AttributeListener(),this);
         SolvePriority();
         boolean success = new PlaceHolderAPIHook(this).hook();
         if(success){
@@ -114,6 +119,7 @@ public final class Arathoth extends JavaPlugin {
     public void registerDefault(){
         //TODO 本体属性注册
         AttributeManager.register(this,new AdditionalHealth());
+        AttributeManager.register(this,new PhysicalDamage());
         //TODO 本体规则注册
         RulesManager.register(this,new LevelRequired());
     }

@@ -4,6 +4,8 @@ import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.AttributesData;
 import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
 import ink.rainbowbridge.arathoth.Commands.SubCommandExecutor;
+import ink.rainbowbridge.arathoth.Rules.RulesManager;
+import ink.rainbowbridge.arathoth.Rules.SubRules;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -40,7 +42,38 @@ public class Reload implements SubCommandExecutor {
         return true;
     }
     public void reload(){
+        //TODO 重载属性配置
         for(SubAttribute sub: AttributesData.AttributesMap.values()){
+            File File = new File(Arathoth.getInstance().getDataFolder(), "Attributes/" + sub.getName() + ".yml");
+            FileConfiguration file = null;
+            if(File.exists()){
+                file = YamlConfiguration.loadConfiguration(File);
+                sub.register(Arathoth.getInstance(),file,false);
+            }
+            else{
+                FileWriter fw = null;
+                PrintWriter out = null;
+                try {
+                    File.createNewFile();
+                    fw = new FileWriter(File);
+                    out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
+                    out.write("# Arathoth Attributes Configuration");
+                    out.write("# @Author Freeze003(寒雨)");
+                    out.flush();
+                    out.close();
+                    fw.close();
+                    file = YamlConfiguration.loadConfiguration(File);
+                    sub.register(Arathoth.getInstance(),file,true);
+                } catch (IOException e) {
+
+                }
+            }
+            try{
+                file.save(File);
+            } catch (IOException e) { }
+        }
+        // TODO 重载规则配置
+        for(SubRules sub: RulesManager.Sub.values()){
             File File = new File(Arathoth.getInstance().getDataFolder(), "Attributes/" + sub.getName() + ".yml");
             FileConfiguration file = null;
             if(File.exists()){

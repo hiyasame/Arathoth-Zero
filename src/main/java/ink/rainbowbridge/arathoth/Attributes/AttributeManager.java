@@ -1,5 +1,6 @@
 package ink.rainbowbridge.arathoth.Attributes;
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.AttrDecls;
 import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.SubRules;
@@ -64,6 +65,16 @@ public class AttributeManager {
             AttributesData.RegisteredAttr.put(sub.getName(), plugin.getName());
             AttributesData.AttributesMap.put(sub.getName(),sub);
         }
+    }
+
+    /**
+     * 快捷获取属性方法
+     *
+     * @param e 生物
+     * @return 属性data
+     */
+    public static Double[] getAttrData(LivingEntity e,String attr){
+        return AttributesData.AttrData.get(e.getUniqueId().toString()).get(attr);
     }
 
     public static void StatusUpdate(LivingEntity e){

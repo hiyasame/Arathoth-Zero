@@ -15,7 +15,7 @@ public class Listattr implements SubCommandExecutor {
         sender.sendMessage(" ");
         if(!AttributesData.RegisteredAttr.isEmpty()){
         for(String name : AttributesData.RegisteredAttr.keySet()){
-            sender.sendMessage((SendUtils.prefix + "&7Name:&f "+name+" &7Plugin: &f"+AttributesData.RegisteredAttr.get(name) +"&7Priority: &f"+AttributesData.AttributesMap.get(name).getPriority()).replaceAll("&","§"));
+            sender.sendMessage((SendUtils.prefix + "&7Name:&f "+name+" &7Plugin: &f"+AttributesData.RegisteredAttr.get(name) +" &7Priority: &f"+AttributesData.AttributesMap.get(name).getPriority()).replaceAll("&","§"));
         }
         }
         sender.sendMessage(" ");
