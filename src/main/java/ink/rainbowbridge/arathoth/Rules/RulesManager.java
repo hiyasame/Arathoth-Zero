@@ -11,13 +11,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class RulesManager {
-    public static HashMap<String,String> Patterns = new HashMap<>();
+    public static HashMap<String,SubRules> Sub = new HashMap<>();
     public static HashMap<String,String> Rules = new HashMap<>();
-    public static void register(String Name, Plugin plugin){
-        File File = new File(Arathoth.getInstance().getDataFolder(), "Rules/" + Name + ".yml");
+    public static void register(Plugin plugin,SubRules rules) {
+        File File = new File(Arathoth.getInstance().getDataFolder(), "Rules/" + rules.getName() + ".yml");
         FileConfiguration file = null;
         if(File.exists()){
             file = YamlConfiguration.loadConfiguration(File);
+            rules.register(plugin,file,false);
         }
         else{
             FileWriter fw = null;
@@ -32,7 +33,7 @@ public class RulesManager {
                 out.close();
                 fw.close();
                 file = YamlConfiguration.loadConfiguration(File);
-                Arathoth.ConfigurationDefaultSet(Name,file);
+                rules.register(plugin,file,true);
             } catch (IOException e) {
 
             }
@@ -42,12 +43,16 @@ public class RulesManager {
         } catch (IOException e) {
 
         }
-        if(file.getString(Name + ".Pattern") != null && file.get(Name + ".Enable") != null) {
-            if(file.getBoolean(Name + ".Enable")) {
-                SendUtils.info("&fRules Register : &8"+Name+"&f From: &8"+plugin.getName());
-                Patterns.put(Name,file.getString(Name + ".Pattern"));
-                Rules.put(Name, plugin.getName());
-            }
+        if(!Rules.containsKey(rules.getName())){
+            SendUtils.info("&8注册规则: &f"+rules.getName()+" &8From: &f"+plugin.getName());
+            Rules.put(rules.getName(), plugin.getName());
+            Sub.put(rules.getName(),rules);
+        }
+        else{
+            SendUtils.warn("&4规则: &c"+rules.getName()+" &4已经存在，已经自动覆盖!");
+            SendUtils.info("&8注册规则: &f"+rules.getName()+" &8From: &f"+plugin.getName());
+            Rules.put(rules.getName(), plugin.getName());
+            Sub.put(rules.getName(),rules);
         }
     }
     public static boolean Exist(String Rule){

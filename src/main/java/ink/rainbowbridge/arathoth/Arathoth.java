@@ -1,7 +1,13 @@
 package ink.rainbowbridge.arathoth;
 
 import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
+import ink.rainbowbridge.arathoth.Attributes.AttributesData;
+import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
+import ink.rainbowbridge.arathoth.Attributes.sub.AdditionalHealth;
 import ink.rainbowbridge.arathoth.Commands.MainCommand;
+import ink.rainbowbridge.arathoth.Listener.StatusUpdateListeners;
+import ink.rainbowbridge.arathoth.Rules.RulesManager;
+import ink.rainbowbridge.arathoth.Rules.sub.LevelRequired;
 import ink.rainbowbridge.arathoth.Utils.DrawFucker;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.Bukkit;
@@ -12,6 +18,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public final class Arathoth extends JavaPlugin {
@@ -19,6 +28,7 @@ public final class Arathoth extends JavaPlugin {
    public static boolean isDebug = false;
    private static Arathoth instance;
    public static Arathoth getInstance() {return instance;}
+   public static List<SubAttribute> Priority = new ArrayList<>();
 
 
     @Override
@@ -51,7 +61,16 @@ public final class Arathoth extends JavaPlugin {
             SendUtils.warn("PlaceHolderAPI &4not found!");
         }
         DrawFucker.fuck();
-        AttributeManager.register("ExampleAttr",this);
+        Bukkit.getPluginManager().registerEvents(new StatusUpdateListeners(),this);
+        SolvePriority();
+        boolean success = new PlaceHolderAPIHook(this).hook();
+        if(success){
+            SendUtils.info("PlaceHolderHook Successfully");
+        }
+        else{
+            SendUtils.warn("Failed to PlaceHolderHook");
+        }
+        registerDefault();
     }
 
     @Override
@@ -77,8 +96,26 @@ public final class Arathoth extends JavaPlugin {
         }
     }
 
-    public static void ConfigurationDefaultSet(String Name,FileConfiguration file){
-       file.set(Name + ".Pattern","[VALUE] " + Name);
-       file.set(Name + ".Enable",true);
+    public static void SolvePriority(){
+        Priority = new ArrayList<>();
+        HashMap<Integer,SubAttribute> map = new HashMap<>();
+       for(SubAttribute attr : AttributesData.AttributesMap.values()){
+           map.put(attr.getPriority(), attr);
+       }
+       //TODO 按优先级排序，超过500视作禁用
+        for (int j=500;j>0;j--){
+            if(!map.containsKey(j)){continue;}
+            else{
+                Priority.add(map.get(j));
+            }
+        }
     }
+
+    public void registerDefault(){
+        //TODO 本体属性注册
+        AttributeManager.register(this,new AdditionalHealth());
+        //TODO 本体规则注册
+        RulesManager.register(this,new LevelRequired());
+    }
+
 }
