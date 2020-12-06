@@ -10,3 +10,4 @@ Slots:
 StatusInfo:
   - '&f&l%player_name% &bStatusInfo'
   - '&8PhysicalDamage: &f%Arathoth_PhysicalDamage%'
+DecimalFormat: '0.0'

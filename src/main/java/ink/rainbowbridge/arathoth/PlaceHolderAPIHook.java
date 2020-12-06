@@ -16,7 +16,7 @@ public class PlaceHolderAPIHook extends EZPlaceholderHook {
         if(s.startsWith("Primary_")){
             String str = s.replace("Primary_","");
             try{
-                return AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1].toString();
+                return Arathoth.DecimalFormat.format(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[0]);
             }catch (Exception e){
                 SendUtils.warn("PlaceHolderException: &4"+s);
                 return "PlaceHolderException";
@@ -25,7 +25,7 @@ public class PlaceHolderAPIHook extends EZPlaceholderHook {
         else if(s.startsWith("Regular_")){
             String str = s.replace("Regular_","");
             try{
-                return AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[2].toString();
+                return Arathoth.DecimalFormat.format(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1]);
             }catch (Exception e){
                 SendUtils.warn("PlaceHolderException: &4"+s);
                 return "PlaceHolderException";
@@ -34,7 +34,7 @@ public class PlaceHolderAPIHook extends EZPlaceholderHook {
         else if (s.startsWith("Percent_")){
             String str = s.replace("Percent_","");
             try{
-                return AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[3].toString();
+                return Arathoth.DecimalFormat.format(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[2]);
             }catch (Exception e){
                 SendUtils.warn("PlaceHolderException: &4"+s);
                 return "PlaceHolderException";
@@ -43,10 +43,10 @@ public class PlaceHolderAPIHook extends EZPlaceholderHook {
         else if (s.startsWith("Attribute_")){
             String str = s.replace("Attribute_","");
             try{
-                if (!(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1] == AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[2])){
-                return AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1].toString()+"-"+AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1].toString();}
+                if (!(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[0].equals(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[2]))){
+                return Arathoth.DecimalFormat.format(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[0].toString()+"-"+AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1]);}
                 else{
-                    return AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[1].toString();
+                    return Arathoth.DecimalFormat.format(AttributesData.AttrData.get(p.getUniqueId().toString()).get(str)[0]);
                 }
             }catch (Exception e){
                 SendUtils.warn("PlaceHolderException: &4"+s);

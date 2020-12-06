@@ -26,3 +26,8 @@
 - PAPIRequest: 画了张饼，通过PAPI变量判断让使用者自行创建规则
 - PAPIRequest 计划实现的三种功能: 数值类型papi判断，string类型papi判断 contains,equals.....
 - 明天起来注册属性
+
+2020.12.06 0.0.4 Update
+- bug fix
+- 目前注册了11个属性，下次回来完善其他的属性
+- 事件: ArathothStatusUpdateEvent

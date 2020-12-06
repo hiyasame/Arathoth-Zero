@@ -2,11 +2,13 @@ package ink.rainbowbridge.arathoth.Attributes;
 
 import com.sun.xml.internal.bind.v2.schemagen.xmlschema.AttrDecls;
 import ink.rainbowbridge.arathoth.Arathoth;
+import ink.rainbowbridge.arathoth.Events.ArathothStatusUpdateEvent;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.SubRules;
 import ink.rainbowbridge.arathoth.Rules.sub.LevelRequired;
 import ink.rainbowbridge.arathoth.Utils.ItemUtils;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,7 +40,7 @@ public class AttributeManager {
                 File.createNewFile();
                 fw = new FileWriter(File);
                 out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
-                out.write("# Arathoth Attributes Configuration");
+                out.write("# Arathoth Attributes Configuration\n");
                 out.write("# @Author Freeze003(寒雨)");
                 out.flush();
                 out.close();
@@ -78,84 +80,97 @@ public class AttributeManager {
     }
 
     public static void StatusUpdate(LivingEntity e){
-        if(!(e instanceof Player)){
-            new BukkitRunnable(){
-                @Override
-                public void run() {
-                    long time = System.currentTimeMillis();
-                    HashMap<String,Double[]> data = new HashMap<>();
-                    List<ItemStack> items = new ArrayList<>();
-                    List<String> uncoloredlores = new ArrayList<>();
-                    items.add(e.getEquipment().getBoots());
-                    items.add(e.getEquipment().getLeggings());
-                    items.add(e.getEquipment().getChestplate());
-                    items.add(e.getEquipment().getHelmet());
-                    items.add(e.getEquipment().getItemInMainHand());
-                    items.add(e.getEquipment().getItemInOffHand());
-                    for(ItemStack item : items){
-                        if(ItemUtils.hasLore(item)){
-                            List<String> coloredlores = item.getItemMeta().getLore();
-                            for(String lore : coloredlores){
-                               uncoloredlores.add(ChatColor.stripColor(lore));
-                            }
-                        }
-                        for(String attr : AttributesData.RegisteredAttr.keySet()){
-                            data.put(attr,AttributesData.AttributesMap.get(attr).parse(uncoloredlores));
-                        }
-                        AttributesData.AttrData.put(e.getUniqueId().toString(),data);
-                    }
-                    Arathoth.Debug("Status Update: &f"+(System.currentTimeMillis() - time)+"ms &8("+e.getType()+")");
-                }
-            }.runTaskAsynchronously(plugin);
-
-        }
-        else{
-            new BukkitRunnable(){
-
-                @Override
-                public void run() {
-                    long time = System.currentTimeMillis();
-                    HashMap<String,Double[]> data = new HashMap<>();
-                    List<ItemStack> items = new ArrayList<>();
-                    Player p = (Player)e;
-                    List<String> uncoloredlores = new ArrayList<>();
-                    HashMap<Integer,String> Slots = SlotsManager.getSlots();
-                    for(Integer i : Slots.keySet()){
-                        if(p.getInventory().getItem(i)!= null && p.getInventory().getItem(i).getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItem(i).getItemMeta().getLore().get(1)).contains(Slots.get(i))){
-                            items.add(p.getInventory().getItem(i));
-                        }
-                    }
-                    if(p.getInventory().getItemInMainHand() != null && p.getInventory().getItemInMainHand().getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItemInMainHand().getItemMeta().getLore().get(1)).contains(plugin.getConfig().getString("Slots.MainHand"))){
-                        items.add(p.getInventory().getItemInMainHand());
-                    }
-                    for(ItemStack item : items){
-                        if(ItemUtils.hasLore(item)){
-                            //TODO RulesPassorNot
-                            boolean pass = true;
-                            if(!RulesManager.Rules.isEmpty()){
-                                for (SubRules r : RulesManager.Sub.values()){
-                                    if(!r.RulesPass(p,item)){
-                                        pass = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if(pass) {
+        ArathothStatusUpdateEvent eve = new ArathothStatusUpdateEvent(e);
+        Bukkit.getServer().getPluginManager().callEvent(eve);
+        if (!eve.isCancelled()) {
+            if (!(e instanceof Player)) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        long time = System.currentTimeMillis();
+                        HashMap<String, Double[]> data = new HashMap<>();
+                        List<ItemStack> items = new ArrayList<>();
+                        List<String> uncoloredlores = new ArrayList<>();
+                        items.add(e.getEquipment().getBoots());
+                        items.add(e.getEquipment().getLeggings());
+                        items.add(e.getEquipment().getChestplate());
+                        items.add(e.getEquipment().getHelmet());
+                        items.add(e.getEquipment().getItemInMainHand());
+                        items.add(e.getEquipment().getItemInOffHand());
+                        for (ItemStack item : items) {
+                            if (ItemUtils.hasLore(item)) {
                                 List<String> coloredlores = item.getItemMeta().getLore();
                                 for (String lore : coloredlores) {
                                     uncoloredlores.add(ChatColor.stripColor(lore));
                                 }
                             }
+                            for (String attr : AttributesData.RegisteredAttr.keySet()) {
+                                data.put(attr, AttributesData.AttributesMap.get(attr).parse(uncoloredlores));
+                            }
+                            AttributesData.AttrData.put(e.getUniqueId().toString(), data);
                         }
-                        for(String attr : AttributesData.RegisteredAttr.keySet()){
-                            data.put(attr,AttributesData.AttributesMap.get(attr).parse(uncoloredlores));
-                        }
-                        AttributesData.AttrData.put(e.getUniqueId().toString(),data);
+                        Arathoth.Debug("Status Update: &f" + (System.currentTimeMillis() - time) + "ms &8(" + e.getType() + ")");
                     }
-                    Arathoth.Debug("Status Update: &f"+(System.currentTimeMillis() - time)+"ms &8("+p.getName()+")");
-                }
-            }.runTaskAsynchronously(plugin);
+                }.runTaskAsynchronously(plugin);
 
+            } else {
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        long time = System.currentTimeMillis();
+                        HashMap<String, Double[]> data = new HashMap<>();
+                        List<ItemStack> items = new ArrayList<>();
+                        Player p = (Player) e;
+                        List<String> uncoloredlores = new ArrayList<>();
+                        HashMap<Integer, String> Slots = SlotsManager.getSlots();
+                        for (Integer i : Slots.keySet()) {
+                            if (p.getInventory().getItem(i) != null && p.getInventory().getItem(i).getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItem(i).getItemMeta().getLore().get(1)).contains(Slots.get(i))) {
+                                items.add(p.getInventory().getItem(i));
+                            }
+                        }
+                        if (p.getInventory().getItemInMainHand() != null && p.getInventory().getItemInMainHand().getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItemInMainHand().getItemMeta().getLore().get(1)).contains(plugin.getConfig().getString("Slots.MainHand"))) {
+                            items.add(p.getInventory().getItemInMainHand());
+                        }
+                        for (ItemStack item : items) {
+                            if (ItemUtils.hasLore(item)) {
+                                //TODO RulesPassorNot
+                                boolean pass = true;
+                                if (!RulesManager.Rules.isEmpty()) {
+                                    for (SubRules r : RulesManager.Sub.values()) {
+                                        if (!r.RulesPass(p, item)) {
+                                            pass = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (pass) {
+                                    List<String> coloredlores = item.getItemMeta().getLore();
+                                    for (String lore : coloredlores) {
+                                        uncoloredlores.add(ChatColor.stripColor(lore));
+                                    }
+                                }
+                            }
+                            for (String attr : AttributesData.RegisteredAttr.keySet()) {
+                                data.put(attr, AttributesData.AttributesMap.get(attr).parse(uncoloredlores));
+                            }
+                            AttributesData.AttrData.put(e.getUniqueId().toString(), data);
+                        }
+                        Arathoth.Debug("Status Update: &f" + (System.currentTimeMillis() - time) + "ms &8(" + p.getName() + ")");
+                    }
+                }.runTaskAsynchronously(plugin);
+
+            }
         }
+    }
+
+    /**
+     * 设置抛射物属性
+     *
+     * @param uuid uuid
+     * @param data AttributeData
+     */
+    public static void setProjectileData(String uuid,HashMap<String,Double[]> data){
+        AttributesData.AttrData.put(uuid,data);
     }
 }

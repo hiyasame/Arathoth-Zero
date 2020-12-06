@@ -2,14 +2,12 @@ package ink.rainbowbridge.arathoth.Attributes.sub;
 
 import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
-import ink.rainbowbridge.arathoth.Attributes.AttributesData;
 import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
-import ink.rainbowbridge.arathoth.Utils.AttrUtils;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,9 +18,9 @@ import java.util.regex.Pattern;
 
 /**
  * @author 寒雨
- * @create 2020/11/29 9:37
+ * @create 2020/12/6 10:18
  */
-public class PhysicalDamage implements SubAttribute {
+public class MonsterArmor implements SubAttribute {
     private FileConfiguration file;
     private Pattern Primary;
     private Pattern Regular;
@@ -31,8 +29,8 @@ public class PhysicalDamage implements SubAttribute {
     public void register(Plugin plugin, FileConfiguration config, boolean first) {
         file = config;
         if (first) {
-            config.set(getName()+".Priority",200);
-            config.set(getName()+".Pattern", "PhysicalDamage: [VALUE]");
+            config.set(getName()+".Priority",280);
+            config.set(getName()+".Pattern", getName()+": [VALUE]");
         }
 
         Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((\\-|\\+)?(\\d+(\\.\\d+)?))"));
@@ -80,20 +78,14 @@ public class PhysicalDamage implements SubAttribute {
 
     @Override
     public void Action(Event e) {
-        if(e instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-            if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                if (event.getDamager() instanceof LivingEntity) {
-                    Double damage1 = AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[0] + AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[1] * AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[2] / 100;
-                    Double damage2 = AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[0] + AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[1] * AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[2] / 100;
-                    Double damage3 = damage1 + Arathoth.random.nextDouble() * (damage2 - damage1);
-                    event.setDamage(Math.floor(event.getDamage() + damage3));
-                } else if (event.getDamager() instanceof Arrow) {
-                    //TODO 处理弓箭属性，将data当中的属性实现
-                    Double damage1 = AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[0] + AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[1] * AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[2] / 100;
-                    Double damage2 = AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[0] + AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[1] * AttributeManager.getAttrData((LivingEntity) event.getDamager(), "PhysicalDamage")[2] / 100;
-                    Double damage3 = damage1 + Arathoth.random.nextDouble() * (damage2 - damage1);
-                    event.setDamage(Math.floor(event.getDamage() + damage3));
+        if (e instanceof EntityDamageEvent) {
+            EntityDamageEvent eve = (EntityDamageEvent) e;
+            if (eve.getEntity() instanceof Monster){
+                if (eve.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                    Double damage1 = AttributeManager.getAttrData((LivingEntity) eve.getEntity(), getName())[0] + AttributeManager.getAttrData((LivingEntity) eve.getEntity(), getName())[1] * AttributeManager.getAttrData((LivingEntity) eve.getEntity(), getName())[2] / 100;
+                    Double damage2 = AttributeManager.getAttrData((LivingEntity) eve.getEntity(), getName())[0] + AttributeManager.getAttrData((LivingEntity) eve.getEntity(), getName())[1] * AttributeManager.getAttrData((LivingEntity) eve.getEntity(), getName())[2] / 100;
+                    Double value = damage1 + Arathoth.random.nextDouble() * (damage2 - damage1);
+                    eve.setDamage(EntityDamageEvent.DamageModifier.BASE,eve.getDamage(EntityDamageEvent.DamageModifier.BASE) - value);
                 }
             }
         }

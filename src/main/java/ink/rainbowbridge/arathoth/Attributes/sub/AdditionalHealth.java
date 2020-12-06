@@ -154,7 +154,7 @@ public class AdditionalHealth implements SubAttribute {
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerInteractEvent) {
                 PlayerInteractEvent event = (PlayerInteractEvent) e;
-                Double health = Math.floor(20.0D + AttributesData.AttrData.get(event.getPlayer().getUniqueId().toString()).get(getName())[1]);
+                Double health = Math.floor(20.0D + AttributesData.AttrData.get(event.getPlayer().getUniqueId().toString()).get(getName())[0]);
                 new BukkitRunnable() {
 
                     @Override
@@ -168,7 +168,7 @@ public class AdditionalHealth implements SubAttribute {
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerJoinEvent) {
                 PlayerJoinEvent event = (PlayerJoinEvent) e;
-                Double health = Math.floor(20.0D + AttributesData.AttrData.get(event.getPlayer().getUniqueId().toString()).get(getName())[1]);
+                Double health = Math.floor(20.0D + AttributesData.AttrData.get(event.getPlayer().getUniqueId().toString()).get(getName())[0]);
                 new BukkitRunnable() {
 
                     @Override

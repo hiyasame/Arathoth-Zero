@@ -1,5 +1,6 @@
 package ink.rainbowbridge.arathoth.Commands;
 
+import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Commands.SubCommands.*;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ public class MainCommand implements CommandExecutor {
         else{
             if(args.length == 0){
                 sender.sendMessage(" ".replaceAll("&","§"));
-                sender.sendMessage("&f&lArathoth Zero   &70.0.1-SNAPSHOT".replaceAll("&","§"));
+                sender.sendMessage(("&f&lArathoth Zero   &7"+ Arathoth.getInstance().getDescription().getVersion()).replaceAll("&","§"));
                 sender.sendMessage(" ".replaceAll("&","§"));
                 sender.sendMessage("&7MainCommands:".replaceAll("&","§"));
                 sender.sendMessage("&8- &fArathoth &7/ &fAra".replaceAll("&","§"));

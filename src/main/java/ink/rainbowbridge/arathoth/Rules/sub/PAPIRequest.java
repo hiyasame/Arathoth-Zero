@@ -40,6 +40,6 @@ public class PAPIRequest implements SubRules {
 
     @Override
     public String getName() {
-        return null;
+        return this.getClass().getSimpleName();
     }
 }

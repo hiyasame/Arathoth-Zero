@@ -3,13 +3,14 @@ package ink.rainbowbridge.arathoth;
 import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
 import ink.rainbowbridge.arathoth.Attributes.AttributesData;
 import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
-import ink.rainbowbridge.arathoth.Attributes.sub.AdditionalHealth;
-import ink.rainbowbridge.arathoth.Attributes.sub.PhysicalDamage;
+import ink.rainbowbridge.arathoth.Attributes.sub.*;
 import ink.rainbowbridge.arathoth.Commands.MainCommand;
 import ink.rainbowbridge.arathoth.Listener.AttributeListener;
 import ink.rainbowbridge.arathoth.Listener.StatusUpdateListeners;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.sub.LevelRequired;
+import ink.rainbowbridge.arathoth.Rules.sub.OwnderRequest;
+import ink.rainbowbridge.arathoth.Rules.sub.PermRequest;
 import ink.rainbowbridge.arathoth.Utils.DrawFucker;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +35,7 @@ public final class Arathoth extends JavaPlugin {
    public static Arathoth getInstance() {return instance;}
    public static List<SubAttribute> Priority = new ArrayList<>();
    public static Random random = new Random();
+   public static DecimalFormat DecimalFormat = new DecimalFormat("0.0");
 
 
     @Override
@@ -76,6 +79,9 @@ public final class Arathoth extends JavaPlugin {
             SendUtils.warn("Failed to PlaceHolderHook");
         }
         registerDefault();
+        if (config.get("DecimalFormat") != null){
+            DecimalFormat = new DecimalFormat(config.getString("DecimalFormat"));
+        }
     }
 
     @Override
@@ -120,8 +126,19 @@ public final class Arathoth extends JavaPlugin {
         //TODO 本体属性注册
         AttributeManager.register(this,new AdditionalHealth());
         AttributeManager.register(this,new PhysicalDamage());
+        AttributeManager.register(this,new MagicDamage());
+        AttributeManager.register(this,new MonsterDamage());
+        AttributeManager.register(this,new MonsterArmor());
+        AttributeManager.register(this,new PhysicalDamage());
+        AttributeManager.register(this,new PlayerDamage());
+        AttributeManager.register(this,new TrueDamage());
+        AttributeManager.register(this,new PlayerTrueDamage());
+        AttributeManager.register(this,new MagicArmor());
+        AttributeManager.register(this,new MagicArmor());
         //TODO 本体规则注册
         RulesManager.register(this,new LevelRequired());
+        RulesManager.register(this,new OwnderRequest());
+        RulesManager.register(this,new PermRequest());
     }
 
 }

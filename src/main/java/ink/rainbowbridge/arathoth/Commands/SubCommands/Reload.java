@@ -57,7 +57,7 @@ public class Reload implements SubCommandExecutor {
                     File.createNewFile();
                     fw = new FileWriter(File);
                     out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
-                    out.write("# Arathoth Attributes Configuration");
+                    out.write("# Arathoth Attributes Configuration\n");
                     out.write("# @Author Freeze003(寒雨)");
                     out.flush();
                     out.close();
@@ -74,7 +74,7 @@ public class Reload implements SubCommandExecutor {
         }
         // TODO 重载规则配置
         for(SubRules sub: RulesManager.Sub.values()){
-            File File = new File(Arathoth.getInstance().getDataFolder(), "Attributes/" + sub.getName() + ".yml");
+            File File = new File(Arathoth.getInstance().getDataFolder(), "Rules/" + sub.getName() + ".yml");
             FileConfiguration file = null;
             if(File.exists()){
                 file = YamlConfiguration.loadConfiguration(File);
@@ -87,7 +87,7 @@ public class Reload implements SubCommandExecutor {
                     File.createNewFile();
                     fw = new FileWriter(File);
                     out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
-                    out.write("# Arathoth Attributes Configuration");
+                    out.write("# Arathoth Rules Configuration\n");
                     out.write("# @Author Freeze003(寒雨)");
                     out.flush();
                     out.close();

@@ -27,7 +27,7 @@ public class RulesManager {
                 File.createNewFile();
                 fw = new FileWriter(File);
                 out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
-                out.write("# Arathoth Rules Configuration");
+                out.write("# Arathoth Rules Configuration\n");
                 out.write("# @Author Freeze003(寒雨)");
                 out.flush();
                 out.close();

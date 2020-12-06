@@ -1,6 +1,9 @@
 package ink.rainbowbridge.arathoth.Utils;
 
 import ink.rainbowbridge.arathoth.Arathoth;
+import ink.rainbowbridge.arathoth.Attributes.AttributesData;
+
+import java.util.HashMap;
 
 /**
  * @author 寒雨
@@ -17,5 +20,16 @@ public class AttrUtils {
     public static Double getRandom(Double value1,Double value2){
         Double random = Math.floor(value1 + Arathoth.random.nextDouble()*(value2-value1));
         return random;
+    }
+
+    /**
+     *
+     * 获取属性data
+     *
+     * @param uuid uuid
+     * @return data
+     */
+    public static HashMap<String,Double[]> getAttributesData(String uuid){
+        return AttributesData.AttrData.get(uuid);
     }
 }
