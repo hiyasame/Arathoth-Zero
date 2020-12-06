@@ -28,14 +28,14 @@ public class LevelRequired implements SubRules {
             config.set(getName()+".Pattern", "LevelRequired: [VALUE]");
         }
 
-        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(/d+)"));
+        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(\\d+)"));
 
     }
 
     @Override
     public boolean RulesPass(Player p, ItemStack item) {
         Integer lvl = null;
-        if (RulesManager.Exist("LevelRequire")) {
+        if (RulesManager.Exist(this.getName())) {
             for (String str : item.getItemMeta().getLore()) {
                 Matcher m = Primary.matcher(ChatColor.stripColor(str));
                 if(m.find()){

@@ -19,7 +19,6 @@
 - 注册了PhysicalDamage属性，写了一个属性集中处理的监听类AttributeListener，目前只支持EntityDamagedByEntityEvent
 - 属性计算优先级模块完善
 - AttrUtils类，提供来方便属性操作的方法，目前只有一个方法: getrandom(Double value1,Double value2) 处理浮动属性值
-<<<<<<< HEAD
 
 2020.12.06 0.0.3.02 Update
 - bug fix
@@ -27,5 +26,3 @@
 - PAPIRequest: 画了张饼，通过PAPI变量判断让使用者自行创建规则
 - PAPIRequest 计划实现的三种功能: 数值类型papi判断，string类型papi判断 contains,equals.....
 - 明天起来注册属性
-=======
->>>>>>> 468f02f8f9a916372fd4b88f614c16b39910342c
