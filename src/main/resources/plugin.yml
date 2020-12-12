@@ -1,5 +1,5 @@
 name: Arathoth
-version: 0.0.4-SNAPSHOT
+version: 0.1.0-SNAPSHOT
 main: ink.rainbowbridge.arathoth.Arathoth
 softdepend:  [ PlaceHolderAPI ]
 authors: [ ColdRain_Moro ]

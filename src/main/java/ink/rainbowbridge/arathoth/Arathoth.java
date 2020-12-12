@@ -1,30 +1,24 @@
 package ink.rainbowbridge.arathoth;
 
-import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
-import ink.rainbowbridge.arathoth.Attributes.AttributesData;
-import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
-import ink.rainbowbridge.arathoth.Attributes.sub.*;
+import ink.rainbowbridge.arathoth.Attributes.AttributeLoader;
+import ink.rainbowbridge.arathoth.Attributes.SubAttributes.*;
 import ink.rainbowbridge.arathoth.Commands.MainCommand;
 import ink.rainbowbridge.arathoth.Listener.AttributeListener;
 import ink.rainbowbridge.arathoth.Listener.StatusUpdateListeners;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.sub.LevelRequired;
 import ink.rainbowbridge.arathoth.Rules.sub.OwnderRequest;
+import ink.rainbowbridge.arathoth.Rules.sub.PAPIRequest;
 import ink.rainbowbridge.arathoth.Rules.sub.PermRequest;
 import ink.rainbowbridge.arathoth.Utils.DrawFucker;
 import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 
@@ -33,7 +27,6 @@ public final class Arathoth extends JavaPlugin {
    public static boolean isDebug = false;
    private static Arathoth instance;
    public static Arathoth getInstance() {return instance;}
-   public static List<SubAttribute> Priority = new ArrayList<>();
    public static Random random = new Random();
    public static DecimalFormat DecimalFormat = new DecimalFormat("0.0");
 
@@ -60,7 +53,6 @@ public final class Arathoth extends JavaPlugin {
 
         isDebug = config.getBoolean("Debug");
         SendUtils.info("&fPlugin has been enabled");
-        Bukkit.getPluginCommand("Arathoth").setExecutor(new MainCommand());
         if(hasPAPI()){
             SendUtils.info("&fPlaceholderAPI &8Hook!");
         }
@@ -68,9 +60,6 @@ public final class Arathoth extends JavaPlugin {
             SendUtils.warn("PlaceHolderAPI &4not found!");
         }
         DrawFucker.fuck();
-        Bukkit.getPluginManager().registerEvents(new StatusUpdateListeners(),this);
-        Bukkit.getPluginManager().registerEvents(new AttributeListener(),this);
-        SolvePriority();
         boolean success = new PlaceHolderAPIHook(this).hook();
         if(success){
             SendUtils.info("PlaceHolderHook Successfully");
@@ -107,38 +96,41 @@ public final class Arathoth extends JavaPlugin {
         }
     }
 
-    public static void SolvePriority(){
-        Priority = new ArrayList<>();
-        HashMap<Integer,SubAttribute> map = new HashMap<>();
-       for(SubAttribute attr : AttributesData.AttributesMap.values()){
-           map.put(attr.getPriority(), attr);
-       }
-       //TODO 按优先级排序，超过500视作禁用
-        for (int j=500;j>0;j--){
-            if(!map.containsKey(j)){continue;}
-            else{
-                Priority.add(map.get(j));
-            }
-        }
-    }
 
     public void registerDefault(){
+        //TODO 监听器注册
+        Bukkit.getPluginManager().registerEvents(new StatusUpdateListeners(),this);
+        Bukkit.getPluginManager().registerEvents(new AttributeListener(),this);
+        //TODO 命令&TabCompleter注册
+        Bukkit.getPluginCommand("Arathoth").setTabCompleter(new MainCommand());
+        Bukkit.getPluginCommand("Arathoth").setExecutor(new MainCommand());
         //TODO 本体属性注册
-        AttributeManager.register(this,new AdditionalHealth());
-        AttributeManager.register(this,new PhysicalDamage());
-        AttributeManager.register(this,new MagicDamage());
-        AttributeManager.register(this,new MonsterDamage());
-        AttributeManager.register(this,new MonsterArmor());
-        AttributeManager.register(this,new PhysicalDamage());
-        AttributeManager.register(this,new PlayerDamage());
-        AttributeManager.register(this,new TrueDamage());
-        AttributeManager.register(this,new PlayerTrueDamage());
-        AttributeManager.register(this,new MagicArmor());
-        AttributeManager.register(this,new MagicArmor());
+        AttributeLoader.Register(new AdditionalHealth(),this);
+        AttributeLoader.Register(new AttackSpeedRank(),this);
+        AttributeLoader.Register(new CriticalArmor(),this);
+        AttributeLoader.Register(new CriticalChance(),this);
+        AttributeLoader.Register(new CriticalDamage(),this);
+        AttributeLoader.Register(new CriticalDodge(),this);
+        AttributeLoader.Register(new DodgeRate(),this);
+        AttributeLoader.Register(new HitRate(),this);
+        AttributeLoader.Register(new LifeSteal(),this);
+        AttributeLoader.Register(new LifeStealResist(),this);
+        AttributeLoader.Register(new MagicArmor(),this);
+        AttributeLoader.Register(new MagicDamage(),this);
+        AttributeLoader.Register(new MonsterDamage(),this);
+        AttributeLoader.Register(new MonsterArmor(),this);
+        AttributeLoader.Register(new PhysicalArmor(),this);
+        AttributeLoader.Register(new PhysicalDamage(),this);
+        AttributeLoader.Register(new PlayerArmor(),this);
+        AttributeLoader.Register(new PlayerDamage(),this);
+        AttributeLoader.Register(new PlayerTrueDamage(),this);
+        AttributeLoader.Register(new TrueDamage(),this);
+        AttributeLoader.Register(new Regen(),this);
         //TODO 本体规则注册
         RulesManager.register(this,new LevelRequired());
         RulesManager.register(this,new OwnderRequest());
         RulesManager.register(this,new PermRequest());
+        RulesManager.register(this,new PAPIRequest());
     }
 
 }

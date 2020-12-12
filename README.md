@@ -1,5 +1,12 @@
 # Arathoth-Zero
-丢人自制半成品属性插件，大佬们发现有写错的地方请一定指出!
+What is Arathoth?
+- 克苏鲁神话: 旧日的支配者
+
+And What is Arathoth-Zero?
+- 一款简约风格的高自定义度属性插件
+
+Why you named it so strange?
+- 模仿的坏黑大佬的起名风格XD
 
 # 更新日志
 2020.11.28 Start
@@ -31,3 +38,20 @@
 - bug fix
 - 目前注册了11个属性，下次回来完善其他的属性
 - 事件: ArathothStatusUpdateEvent
+
+2020.12.12 0.1.0 Update
+- 为什么直接横跨6个版本?因为更新得比前面四个版本全部内容都要多
+- Attributes包全部重写，累死我了
+- 作废了上个版本的SubAttribute抽象类，现在注册属性有两个抽象类可以继承:
+- NumberAttribute，SpecialAttribute 他们都是ArathothAttribute的子抽象类
+- NumberAttribute用作一般的数字属性的注册，SpecialAttribute则是用于特殊属性的注册
+- 所有基础属性已经全部注册完毕，AttackSpeedRank是SpecialAttribute实例
+- PlaceHolder现在也支持查询Special属性，但因为是从Object直接转String，所以肯定有些属性很鬼畜
+- 牛逼的PAPIRequest落实了
+- statusinfo 指令更新，现在支持隐藏配置中注册过并且值为0的papi变量
+- AttributeMessage鸽了，因为傻逼Bukkit不提供ActionBar方法，spigot那个又玄乎得我看不懂
+- 事件全部重写:现在有ArathothAttackCDEvent ArathothCritEvent ArathothDodgeEvent ArathothStatusUpdateEvent四个事件
+- 新的类:ArathothAPI，提供了简化属性操作的方法
+- 现在有: 21个属性 4个条件
+- 插件未经测试，不知道有无bug
+- 准备发mcbbs了

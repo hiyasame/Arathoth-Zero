@@ -31,7 +31,7 @@ public class OwnderRequest implements SubRules {
             config.set(getName()+".Pattern", "OwnderRequest: [VALUE]");
         }
 
-        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(\\S)"));
+        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(\\S+)"));
     }
 
     @Override

@@ -1,8 +1,7 @@
 package ink.rainbowbridge.arathoth.Listener;
 
-import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
-import ink.rainbowbridge.arathoth.Attributes.AttributesData;
-import ink.rainbowbridge.arathoth.Attributes.sub.AdditionalHealth;
+import ink.rainbowbridge.arathoth.API.ArathothAPI;
+import ink.rainbowbridge.arathoth.Attributes.AttributeLoader;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,8 +18,7 @@ public class StatusUpdateListeners implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onPlayerSwapHandItemsEvent(PlayerSwapHandItemsEvent event){
@@ -28,14 +26,12 @@ public class StatusUpdateListeners implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onInventoryCloseEvent(InventoryCloseEvent event){
         Player player = (Player) event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onPlayerDropEvent(PlayerDropItemEvent event){
@@ -43,8 +39,7 @@ public class StatusUpdateListeners implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onPlayerPickupItemEvent(PlayerPickupItemEvent event){
@@ -52,8 +47,7 @@ public class StatusUpdateListeners implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onPlayerInteractEvent(PlayerInteractEvent event) {
@@ -61,30 +55,27 @@ public class StatusUpdateListeners implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onPlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        AttributeManager.StatusUpdate((LivingEntity)player);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(player);
     }
     @EventHandler
     void onPlayerQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        AttributesData.AttrData.remove(((LivingEntity)player).getUniqueId().toString());
+        ArathothAPI.UnregisterEntityData(player);
     }
     @EventHandler
     void onEntitySpawnEvent(CreatureSpawnEvent event)  {
         LivingEntity e = event.getEntity();
-        AttributeManager.StatusUpdate(e);
-        new AdditionalHealth().Action(event);
+        AttributeLoader.StatusUpdate(e);
     }
     @EventHandler
     void onEntityDeathEvent(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Player)) {
-            AttributesData.AttrData.remove((event.getEntity()).getUniqueId().toString());
+            ArathothAPI.UnregisterEntityData(event.getEntity());
         }
     }
 

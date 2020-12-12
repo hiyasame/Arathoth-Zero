@@ -29,7 +29,7 @@ public class PermRequest implements SubRules {
             config.set(getName()+".Pattern", "PermRequest: [VALUE]");
         }
 
-        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(\\S)"));
+        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(\\S+)"));
     }
 
     @Override

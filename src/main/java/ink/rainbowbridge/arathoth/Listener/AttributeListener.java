@@ -1,10 +1,7 @@
 package ink.rainbowbridge.arathoth.Listener;
 
+import ink.rainbowbridge.arathoth.API.ArathothAPI;
 import ink.rainbowbridge.arathoth.Arathoth;
-import ink.rainbowbridge.arathoth.Attributes.AttributeManager;
-import ink.rainbowbridge.arathoth.Attributes.AttributesData;
-import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
-import ink.rainbowbridge.arathoth.Utils.AttrUtils;
 import org.bukkit.entity.Arrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,32 +11,19 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * 属性集中处理监听类
+ * 监听与属性有关的一些事件
  *
  * @author 寒雨
- * @create 2020/11/29 10:19
+ * @create 2020/12/12 11:09
  */
 public class AttributeListener implements Listener {
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEDBEEvent(EntityDamageByEntityEvent e){
-        new BukkitRunnable(){
-
-            @Override
-            public void run() {
-                for(SubAttribute sa : Arathoth.Priority){
-                    sa.Action(e);
-                }
-            }
-        }.runTask(Arathoth.getInstance());
-    }
-
     @EventHandler
     public void onBowShootEvent(EntityShootBowEvent e){
         new BukkitRunnable(){
 
             @Override
             public void run() {
-                AttributeManager.setProjectileData(e.getProjectile().getUniqueId().toString(), AttrUtils.getAttributesData(e.getEntity().getUniqueId().toString()));
+                ArathothAPI.setProjectileData(e.getProjectile(),ArathothAPI.getNumAttributeData(e.getEntity()));
             }
         }.runTask(Arathoth.getInstance());
     }
@@ -47,7 +31,7 @@ public class AttributeListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void UnregisterArrowAttr(EntityDamageByEntityEvent e){
         if(e.getDamager() instanceof Arrow) {
-            AttributesData.AttrData.remove(e.getDamager().getUniqueId().toString());
+            ArathothAPI.UnregisterProjectileData(e.getDamager());
         }
     }
 }

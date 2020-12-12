@@ -1,8 +1,9 @@
 package ink.rainbowbridge.arathoth.Commands.SubCommands;
 
 import ink.rainbowbridge.arathoth.Arathoth;
-import ink.rainbowbridge.arathoth.Attributes.AttributesData;
-import ink.rainbowbridge.arathoth.Attributes.SubAttribute;
+import ink.rainbowbridge.arathoth.Attributes.AttributeLoader;
+import ink.rainbowbridge.arathoth.Attributes.NumberAttribute;
+import ink.rainbowbridge.arathoth.Attributes.SpecialAttribute;
 import ink.rainbowbridge.arathoth.Commands.SubCommandExecutor;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.SubRules;
@@ -37,40 +38,16 @@ public class Reload implements SubCommandExecutor {
             RulesFile.mkdirs();
         }
         reload();
-        Arathoth.SolvePriority();
         sender.sendMessage(SendUtils.prefix + "重载完成! " + ChatColor.WHITE + "[" + ChatColor.DARK_GRAY + (System.currentTimeMillis() - time) +"ms"+ChatColor.WHITE + "]");
         return true;
     }
     public void reload(){
         //TODO 重载属性配置
-        for(SubAttribute sub: AttributesData.AttributesMap.values()){
-            File File = new File(Arathoth.getInstance().getDataFolder(), "Attributes/" + sub.getName() + ".yml");
-            FileConfiguration file = null;
-            if(File.exists()){
-                file = YamlConfiguration.loadConfiguration(File);
-                sub.register(Arathoth.getInstance(),file,false);
-            }
-            else{
-                FileWriter fw = null;
-                PrintWriter out = null;
-                try {
-                    File.createNewFile();
-                    fw = new FileWriter(File);
-                    out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(File), StandardCharsets.UTF_8)));
-                    out.write("# Arathoth Attributes Configuration\n");
-                    out.write("# @Author Freeze003(寒雨)");
-                    out.flush();
-                    out.close();
-                    fw.close();
-                    file = YamlConfiguration.loadConfiguration(File);
-                    sub.register(Arathoth.getInstance(),file,true);
-                } catch (IOException e) {
-
-                }
-            }
-            try{
-                file.save(File);
-            } catch (IOException e) { }
+        for(NumberAttribute num : AttributeLoader.RegisteredNum.keySet()){
+            num.register(Arathoth.getInstance());
+        }
+        for(SpecialAttribute sp : AttributeLoader.RegisteredSpecial.keySet()){
+            sp.register(Arathoth.getInstance());
         }
         // TODO 重载规则配置
         for(SubRules sub: RulesManager.Sub.values()){

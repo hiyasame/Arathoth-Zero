@@ -7,13 +7,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
-public class MainCommand implements CommandExecutor {
+import java.util.Arrays;
+import java.util.List;
+
+public class MainCommand implements CommandExecutor , TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("Arathoth.admin")){
             sender.sendMessage("&f&lArathoth &7- &7&lby.&8&l寒雨".replaceAll("&","§"));
-            sender.sendMessage("&7Version: &f0.0.3.2020.11.29".replaceAll("&","§"));
+            sender.sendMessage(("&7Version: &f"+Arathoth.getInstance().getDescription().getVersion()).replaceAll("&","§"));
             return true;
         }
         else{
@@ -62,6 +66,17 @@ public class MainCommand implements CommandExecutor {
             }
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+
+        if (!sender.hasPermission("Arathoth.admin")){
+            return null;
+        }
+        else{
+            return Arrays.asList("listattr","status","reload","debug","about");
+        }
     }
 
     private enum command {

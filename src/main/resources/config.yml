@@ -1,4 +1,4 @@
-Debug: true
+Debug: false
 Slots:
   MainHand: 'MainHand'
   Register:
@@ -8,6 +8,14 @@ Slots:
     39: 'Helmet'
     40: 'OffHand'
 StatusInfo:
-  - '&f&l%player_name% &bStatusInfo'
-  - '&8PhysicalDamage: &f%Arathoth_PhysicalDamage%'
+  Messages:
+    - '&f&l%player_name% &bStatusInfo'
+    - '&8PhysicalDamage: &f%Arathoth_Primary_PhysicalDamage%'
+  RegisteredPAPI:
+    - '%Arathoth_Primary_PhysicalDamage%'
+  MinLines: 1
+  HideTitleMessage:
+    Title: '&8&lSorry!'
+    SubTitle: '&7&lYou have no status!'
 DecimalFormat: '0.0'
+ActionBarMessageRemind: true
