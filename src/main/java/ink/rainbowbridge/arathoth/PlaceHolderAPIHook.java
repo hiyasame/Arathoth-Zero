@@ -57,7 +57,7 @@ public class PlaceHolderAPIHook extends EZPlaceholderHook {
         else if (s.startsWith("Special_")){
             String str = s.replace("Special_","");
             try{
-                return (String)ArathothAPI.getSpecialAttributeValue(p,AttributeLoader.SpecialName.get(str));
+                return ArathothAPI.getSpecialAttributePlaceHolder(str,p);
             }catch (Exception e){
                 SendUtils.warn("PlaceHolderException: &4"+s);
                 return "PlaceHolderException";

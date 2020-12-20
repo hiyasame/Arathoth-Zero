@@ -77,7 +77,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
         if(isEnable()){
             if (e instanceof PlayerItemHeldEvent) {
                 PlayerItemHeldEvent event = (PlayerItemHeldEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -85,13 +85,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerSwapHandItemsEvent) {
                 PlayerSwapHandItemsEvent event = (PlayerSwapHandItemsEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -99,13 +99,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerDropItemEvent) {
                 PlayerDropItemEvent event = (PlayerDropItemEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -113,13 +113,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof InventoryCloseEvent) {
                 InventoryCloseEvent event = (InventoryCloseEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -127,13 +127,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerPickupItemEvent) {
                 PlayerPickupItemEvent event = (PlayerPickupItemEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -141,13 +141,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerInteractEvent) {
                 PlayerInteractEvent event = (PlayerInteractEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -155,13 +155,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof PlayerJoinEvent) {
                 PlayerJoinEvent event = (PlayerJoinEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -169,13 +169,13 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getPlayer().setMaxHealth(health);
+                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());
             } else if (e instanceof CreatureSpawnEvent) {
                 CreatureSpawnEvent event = (CreatureSpawnEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[1] + ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[3]/100);
+                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[2]/100);
                 new BukkitRunnable() {
 
                     @Override
@@ -183,7 +183,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         if (health < config.getDouble("Settings.MinHealth")) {
                             event.getEntity().setMaxHealth(config.getDouble("Settings.MinHealth"));
                         } else {
-                            event.getEntity().setMaxHealth(health);
+                            event.getEntity().setMaxHealth(event.getEntity().getMaxHealth() + health);
                         }
                     }
                 }.runTask(Arathoth.getInstance());

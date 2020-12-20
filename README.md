@@ -55,3 +55,12 @@ Why you named it so strange?
 - 现在有: 21个属性 4个条件
 - 插件未经测试，不知道有无bug
 - 准备发mcbbs了
+
+2020.12.20 0.1.1 Update
+- StatusInfo报错修复
+- StatusInfo现在用来查询指定玩家属性，如果要查询自身属性请使用mystatus
+- tabcomplete 更新
+- 新的一条特殊属性: DurabilityFix  Asgard传统艺能
+- 修复了AdditionalHealth导致的报错
+- 优化API中获取属性值方法逻辑，规避了一些特殊情况下的NullPointerException
+- SpecialAttribute抽象类新增一条抽象方法 : String getPlaceHolder(Player p) - papi返回这个方法返回的值

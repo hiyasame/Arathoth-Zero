@@ -14,11 +14,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import sun.net.util.IPAddressUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 0.1.0 时代新属性管理类
@@ -28,11 +30,11 @@ import java.util.UUID;
  */
 public class AttributeLoader {
     //TODO 属性data
-    public static HashMap<UUID,HashMap<String,Double[]>> NumAttributeData = new HashMap<>();
+    public static ConcurrentHashMap<UUID,HashMap<String,Double[]>> NumAttributeData = new ConcurrentHashMap<>();
     public static HashMap<NumberAttribute, Plugin> RegisteredNum = new HashMap<>();
     public static HashMap<SpecialAttribute, Plugin> RegisteredSpecial = new HashMap<>();
     public static HashMap<String,SpecialAttribute> SpecialName = new HashMap<>();
-    public static HashMap<UUID,HashMap<String,Double[]>> ArrowData = new HashMap<>();
+    public static ConcurrentHashMap<UUID,HashMap<String,Double[]>> ArrowData = new ConcurrentHashMap<>();
     //TODO Register
 
     /**
@@ -75,44 +77,51 @@ public class AttributeLoader {
                             items.add(p.getInventory().getItem(i));
                         }
                     }
-                    if (p.getInventory().getItemInMainHand() != null && p.getInventory().getItemInMainHand().getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItemInMainHand().getItemMeta().getLore().get(0)).contains(Arathoth.getInstance().getConfig().getString("Slots.MainHand"))) {
+                    if (p.getInventory().getItemInMainHand().getItemMeta() != null)
+                    {if(p.getInventory().getItemInMainHand().getItemMeta().hasLore()){
+                        if(ChatColor.stripColor(p.getInventory().getItemInMainHand().getItemMeta().getLore().get(0)).contains(Arathoth.getInstance().getConfig().getString("Slots.MainHand"))) {
                         items.add(p.getInventory().getItemInMainHand());
-                    }
-                    for (ItemStack item : items) {
-                        if (ItemUtils.hasLore(item)) {
-                            //TODO RulesPassorNot
-                            boolean pass = true;
-                            if (!RulesManager.Rules.isEmpty()) {
-                                for (SubRules r : RulesManager.Sub.values()) {
-                                    if (!r.RulesPass(p, item)) {
-                                        pass = false;
-                                        break;
+                    }}}
+                    if (!items.isEmpty()) {
+                        for (ItemStack item : items) {
+                            if (ItemUtils.hasLore(item)) {
+                                //TODO RulesPassorNot
+                                boolean pass = true;
+                                if (!RulesManager.Rules.isEmpty()) {
+                                    for (SubRules r : RulesManager.Sub.values()) {
+                                        if (!r.RulesPass(p, item)) {
+                                            pass = false;
+                                            break;
+                                        }
                                     }
-                                }
-                                if (pass){
-                                    for(NumberAttribute attr : RegisteredNum.keySet()){
-                                        if(data.get(attr.getName()) == null){
+                                    if (pass) {
+                                        for (NumberAttribute attr : RegisteredNum.keySet()) {
+                                            if (data.get(attr.getName()) == null) {
+                                                data.put(attr.getName(), attr.parseNumber(item));
+                                            } else {
+                                                data.put(attr.getName(), ArathothAPI.DataPutIn(data.get(attr.getName()), attr.parseNumber(item)));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    for (NumberAttribute attr : RegisteredNum.keySet()) {
+                                        if (data.get(attr.getName()) == null) {
                                             data.put(attr.getName(), attr.parseNumber(item));
-                                        }
-                                        else{
-                                            data.put(attr.getName(), ArathothAPI.DataPutIn(data.get(attr.getName()),attr.parseNumber(item)));
+                                        } else {
+                                            data.put(attr.getName(), ArathothAPI.DataPutIn(data.get(attr.getName()), attr.parseNumber(item)));
                                         }
                                     }
                                 }
+                                NumAttributeData.put(p.getUniqueId(), data);
+                                Bukkit.getPluginManager().callEvent(new ArathothStatusUpdateEvent(e, data));
+                                Arathoth.Debug("Status Update: &f" + (System.currentTimeMillis() - time) + "ms &8(" + p.getName() + ")");
                             }
-                            else{
-                                for(NumberAttribute attr : RegisteredNum.keySet()) {
-                                    if (data.get(attr.getName()) == null) {
-                                        data.put(attr.getName(), attr.parseNumber(item));
-                                    } else {
-                                        data.put(attr.getName(), ArathothAPI.DataPutIn(data.get(attr.getName()), attr.parseNumber(item)));
-                                    }
-                                }
-                            }
-                            NumAttributeData.put(p.getUniqueId(),data);
-                            Bukkit.getPluginManager().callEvent(new ArathothStatusUpdateEvent(e,data));
-                            Arathoth.Debug("Status Update: &f" + (System.currentTimeMillis() - time) + "ms &8(" + p.getName() + ")");
                         }
+                    }else{
+                        for(NumberAttribute attr : RegisteredNum.keySet()){
+                            data.put(attr.getName(), new Double[]{0.0D, 0.0D, 0.0D});
+                        }
+                        NumAttributeData.put(p.getUniqueId(),data);
                     }
                 }
                 else{

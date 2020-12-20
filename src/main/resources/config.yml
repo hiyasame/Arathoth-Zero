@@ -8,6 +8,7 @@ Slots:
     39: 'Helmet'
     40: 'OffHand'
 StatusInfo:
+  Command: 'mystatus'
   Messages:
     - '&f&l%player_name% &bStatusInfo'
     - '&8PhysicalDamage: &f%Arathoth_Primary_PhysicalDamage%'

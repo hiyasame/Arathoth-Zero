@@ -69,6 +69,11 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
     }
 
     @Override
+    public String getPlaceHolder(Player p) {
+        return (String)parseValue(p);
+    }
+
+    @Override
     public String getName() {
         return getClass().getSimpleName();
     }

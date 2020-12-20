@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -127,13 +128,21 @@ public class ArathothAPI {
 
     /**
      * 直接获取指定属性值
+     * 若不存在则直接更新属性再获取
      *
      * @param e 目标生物
      * @param AttributeName 指定属性
      * @return primary,regular,percent
      */
     public static Double[] getNumAttributeValues(LivingEntity e,String AttributeName){
-        return AttributeLoader.NumAttributeData.get(e.getUniqueId()).get(AttributeName);
+        if(AttributeLoader.NumAttributeData.containsKey(e.getUniqueId())) {
+            Double[] values = AttributeLoader.NumAttributeData.get(e.getUniqueId()).get(AttributeName);
+            return values;
+        }
+        else{
+            AttributeLoader.StatusUpdate(e);
+            return AttributeLoader.NumAttributeData.get(e.getUniqueId()).get(AttributeName);
+        }
     }
 
     /**
@@ -212,5 +221,20 @@ public class ArathothAPI {
      */
     public static Double[] getProjectileNum(Entity e,String AttributeName){
        return AttributeLoader.ArrowData.get(e.getUniqueId()).get(AttributeName);
+    }
+
+    /**
+     * 获取特殊属性占位符变量
+     *
+     * @param name 属性名
+     * @param p 玩家
+     * @return value
+     */
+    public static String getSpecialAttributePlaceHolder(String name, Player p){
+        HashMap<String,SpecialAttribute> attrs = new HashMap<>();
+       for(SpecialAttribute sa : AttributeLoader.RegisteredSpecial.keySet()){
+           attrs.put(sa.getName(),sa);
+       }
+        return attrs.get(name).getPlaceHolder(p);
     }
 }

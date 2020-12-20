@@ -1,6 +1,7 @@
 package ink.rainbowbridge.arathoth.Attributes;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,4 +28,11 @@ public interface SpecialAttribute extends ArathothAttribute{
      * @param entity 指定生物，可为null
      */
     public abstract void function(Event e, LivingEntity entity);
+
+    /**
+     *  0.1.1版本新增，papi变量返回此值
+     *
+     * @return Placeholder
+     */
+    public abstract String getPlaceHolder(Player p);
 }

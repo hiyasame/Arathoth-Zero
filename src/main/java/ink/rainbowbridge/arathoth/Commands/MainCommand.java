@@ -74,9 +74,10 @@ public class MainCommand implements CommandExecutor , TabCompleter {
         if (!sender.hasPermission("Arathoth.admin")){
             return null;
         }
-        else{
-            return Arrays.asList("listattr","status","reload","debug","about");
+        if(args.length == 0){
+            return Arrays.asList(new String[]{"listattr", "reload", "status", "about", "debug"});
         }
+        return null;
     }
 
     private enum command {
