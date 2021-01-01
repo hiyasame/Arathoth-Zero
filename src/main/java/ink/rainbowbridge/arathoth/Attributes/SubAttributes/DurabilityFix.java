@@ -97,7 +97,7 @@ public class DurabilityFix implements SpecialAttribute {
 
     @Override
     public boolean isEnable() {
-        return false;
+        return isEnable;
     }
 
     /**

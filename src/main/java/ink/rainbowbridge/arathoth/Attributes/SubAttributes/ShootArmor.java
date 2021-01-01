@@ -5,19 +5,14 @@ import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.NumberAttribute;
 import ink.rainbowbridge.arathoth.Attributes.data.AttributeData;
 import ink.rainbowbridge.arathoth.Events.ArathothStatusExecuteEvent;
-import ink.rainbowbridge.arathoth.Utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,9 +22,9 @@ import java.util.regex.Pattern;
 
 /**
  * @author 寒雨
- * @create 2020/12/12 12:40
+ * @create 2020/12/26 23:41
  */
-public class MagicDamage implements NumberAttribute, Listener {
+public class ShootArmor implements NumberAttribute, Listener {
     private FileConfiguration config;
     private Pattern Primary;
     private Pattern Regular;
@@ -65,24 +60,17 @@ public class MagicDamage implements NumberAttribute, Listener {
         }.runTaskAsynchronously(Arathoth.getInstance());
         return value;
     }
+
     @Override
     public void function(Event e) {
-        if(e instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-                    if (event.getDamager() instanceof LivingEntity) {
-                        Double damage = ArathothAPI.getNumAttributeData((LivingEntity) event.getDamager(), getName()).solveData();
-                        ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent(this.getName(),e,damage,(LivingEntity) ((EntityDamageByEntityEvent) e).getDamager());
-                        Bukkit.getPluginManager().callEvent(eve);
-                        event.setDamage(Math.floor(event.getDamage() + eve.getValue()));
-                    } else if (event.getDamager() instanceof Arrow) {
-                        //TODO 处理弓箭属性，将data当中的属性实现
-                        if (((Arrow) event.getDamager()).getShooter() instanceof LivingEntity) {
-                            Double damage = ArathothAPI.getArrowData(event.getDamager(), getName()).solveData();
-                            ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent(this.getName(),e,damage,(LivingEntity) (((Arrow) event.getDamager()).getShooter()));
-                            Bukkit.getPluginManager().callEvent(eve);
-                            event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, Math.floor(event.getDamage(EntityDamageEvent.DamageModifier.MAGIC) + eve.getValue()));
-                        }
-                    }
+        if (e instanceof EntityDamageEvent) {
+            EntityDamageEvent eve = (EntityDamageEvent) e;
+            if (eve.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
+                Double value = ArathothAPI.getNumAttributeData((LivingEntity) eve.getEntity(),getName()).solveData();
+                ArathothStatusExecuteEvent event = new ArathothStatusExecuteEvent(this.getName(),e,value,(LivingEntity) eve.getEntity());
+                Bukkit.getPluginManager().callEvent(event);
+                eve.setDamage(eve.getDamage() - event.getValue());
+            }
         }
     }
 
@@ -109,6 +97,7 @@ public class MagicDamage implements NumberAttribute, Listener {
         Regular = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((\\-|\\+)?(\\d+(\\.\\d+)?))(\\-)(\\d+(\\.\\d+)?)"));
         Percent = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((\\-|\\+)?(\\d+(\\.\\d+)?))%"));
         isEnable = config.getBoolean(getName()+".Enable",false);
+
     }
 
     @Override
@@ -116,8 +105,10 @@ public class MagicDamage implements NumberAttribute, Listener {
         return isEnable;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void ListenAttribute(EntityDamageByEntityEvent e){
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void ListenAttribute(EntityDamageEvent e){
         function(e);
     }
 }
+
+

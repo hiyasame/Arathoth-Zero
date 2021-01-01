@@ -3,12 +3,15 @@ package ink.rainbowbridge.arathoth.API;
 import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.ArathothAttribute;
 import ink.rainbowbridge.arathoth.Attributes.AttributeLoader;
+import ink.rainbowbridge.arathoth.Attributes.NumberAttribute;
 import ink.rainbowbridge.arathoth.Attributes.SpecialAttribute;
+import ink.rainbowbridge.arathoth.Attributes.data.AttributeData;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +19,7 @@ import java.util.HashMap;
 
 /**
  * Arathoth-API
+ * 0.1.3 删除了大部分旧属性操作方法
  *
  * @author 寒雨
  * @create 2020/12/11 21:24
@@ -93,11 +97,13 @@ public class ArathothAPI {
 
     /**
      * 合并数值属性data
+     * 不安全的方法，极易导致NullPointerException，0.1.2时代的遗留方法
      *
      * @param data1 data1
      * @param data2 data2
      * @return data
      */
+    @Deprecated
     public static Double[] DataPutIn(Double[] data1 , Double[] data2){
         Double[] data = {0.0D,0.0D,0.0D};
         data[0] = data1[0] + data2[0];
@@ -106,25 +112,6 @@ public class ArathothAPI {
         return data;
     }
 
-    /**
-     * 获取属性data
-     *
-     * @param e 生物
-     * @return data
-     */
-    public static HashMap<String,Double[]> getNumAttributeData(LivingEntity e){
-        return AttributeLoader.NumAttributeData.get(e.getUniqueId());
-    }
-
-    /**
-     * 直接操作生物属性数据
-     *
-     * @param e 生物
-     * @param data data
-     */
-    public static void setNumAttributeData(LivingEntity e,HashMap<String,Double[]> data){
-        AttributeLoader.NumAttributeData.put(e.getUniqueId(),data);
-    }
 
     /**
      * 直接获取指定属性值
@@ -134,15 +121,9 @@ public class ArathothAPI {
      * @param AttributeName 指定属性
      * @return primary,regular,percent
      */
-    public static Double[] getNumAttributeValues(LivingEntity e,String AttributeName){
-        if(AttributeLoader.NumAttributeData.containsKey(e.getUniqueId())) {
-            Double[] values = AttributeLoader.NumAttributeData.get(e.getUniqueId()).get(AttributeName);
-            return values;
-        }
-        else{
-            AttributeLoader.StatusUpdate(e);
-            return AttributeLoader.NumAttributeData.get(e.getUniqueId()).get(AttributeName);
-        }
+    public static AttributeData getNumAttributeData(LivingEntity e, String AttributeName){
+        NumberAttribute na = AttributeLoader.NumberName.get(AttributeName);
+        return na.parseNumber(AttributeLoader.getEntityLore(e));
     }
 
     /**
@@ -154,49 +135,6 @@ public class ArathothAPI {
      */
     public static Object getSpecialAttributeValue(LivingEntity e,SpecialAttribute attr){
         return attr.parseValue(e);
-    }
-
-    /**
-     * 处理属性data方法
-     *
-     * @param data data
-     * @return 计算后的值
-     */
-    public static Double SolveAttributeValue(Double[] data){
-        if(data[0].equals(data[1])){
-            return data[0]+data[0]*data[2]/100;
-        }
-        else{
-            return getRandom(data[0]+data[0]*data[2]/100,data[1]+data[1]*data[2]/100);
-        }
-    }
-
-    /**
-     * 从dataMap中注销指定生物data
-     *
-     * @param e 生物
-     */
-    public static void UnregisterEntityData(LivingEntity e){
-        AttributeLoader.NumAttributeData.remove(e.getUniqueId());
-    }
-
-    /**
-     * 操作抛射物属性
-     *
-     * @param e 抛射物
-     * @param data data
-     */
-    public static void setProjectileData(Entity e,HashMap<String,Double[]> data){
-        AttributeLoader.ArrowData.put(e.getUniqueId(),data);
-    }
-
-    /**
-     * 注销弹射物属性
-     *
-     * @param e 弹射物
-     */
-    public static void UnregisterProjectileData(Entity e){
-        AttributeLoader.ArrowData.remove(e.getUniqueId());
     }
 
     /**
@@ -213,17 +151,6 @@ public class ArathothAPI {
     }
 
     /**
-     * 获取弹射物属性data的副本
-     *
-     * @param e 弹射物
-     * @param AttributeName 属性名
-     * @return 指定属性data
-     */
-    public static Double[] getProjectileNum(Entity e,String AttributeName){
-       return AttributeLoader.ArrowData.get(e.getUniqueId()).get(AttributeName);
-    }
-
-    /**
      * 获取特殊属性占位符变量
      *
      * @param name 属性名
@@ -236,5 +163,27 @@ public class ArathothAPI {
            attrs.put(sa.getName(),sa);
        }
         return attrs.get(name).getPlaceHolder(p);
+    }
+
+    /**
+     * 为弓箭设置元数据
+     *
+     * @param e 弓箭
+     * @param name 属性名
+     * @param data 属性data
+     */
+    public static void setArrowData(Entity e,String name,AttributeData data){
+        e.setMetadata(name,new FixedMetadataValue(Arathoth.getInstance(),data));
+    }
+
+    /**
+     *  获取弓箭data
+     *
+     * @param e 弓箭
+     * @param name 属性名
+     * @return 属性data
+     */
+    public static AttributeData getArrowData(Entity e,String name){
+        return (AttributeData) e.getMetadata(name);
     }
 }

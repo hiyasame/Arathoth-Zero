@@ -39,9 +39,10 @@ public class ItemUtils {
         new BukkitRunnable() {
             @Override
             public void run() {
-
-                for(String str : item.getItemMeta().getLore()){
-                    lore.add(ChatColor.stripColor(str));
+                if(!isNull(item) && item.hasItemMeta()) {
+                    for (String str : item.getItemMeta().getLore()) {
+                        lore.add(ChatColor.stripColor(str));
+                    }
                 }
             }
         }.runTaskAsynchronously(Arathoth.getInstance());

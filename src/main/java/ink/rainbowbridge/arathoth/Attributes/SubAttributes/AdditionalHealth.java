@@ -2,25 +2,20 @@ package ink.rainbowbridge.arathoth.Attributes.SubAttributes;
 
 import ink.rainbowbridge.arathoth.API.ArathothAPI;
 import ink.rainbowbridge.arathoth.Arathoth;
-import ink.rainbowbridge.arathoth.Attributes.AttributeLoader;
 import ink.rainbowbridge.arathoth.Attributes.NumberAttribute;
-import ink.rainbowbridge.arathoth.Utils.ItemUtils;
+import ink.rainbowbridge.arathoth.Attributes.data.AttributeData;
+import ink.rainbowbridge.arathoth.Events.ArathothStatusExecuteEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +29,8 @@ import java.util.regex.Pattern;
  *
  * 总算把属性做出自己的花样了，这样就不会被吐槽抄TabooCode4了吧
  *
+ * 0.1.3 AdditionalHealth 又几把重写了
+ *
  * @author 寒雨
  * @create 2020/12/11 21:17
  */
@@ -45,26 +42,28 @@ public class AdditionalHealth implements NumberAttribute , Listener {
     private boolean isEnable;
 
     @Override
-    public Double[] parseNumber(ItemStack item) {
-        //TODO 获取数值属性
-        Double[] value = new Double[3];
+    public AttributeData parseNumber(List<String> uncoloredlores) {
+        /*
+         * 0.1.3 时代新parse方法
+         */
+        AttributeData value = new AttributeData();
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (String str : ItemUtils.getUncoloredLore(item)) {
+                for (String str : uncoloredlores) {
                     Matcher m1 = Primary.matcher(str);
                     Matcher m2 = Regular.matcher(str);
                     Matcher m3 = Percent.matcher(str);
                     if(m1.find()){
-                        value[0] += Double.valueOf(m1.group(1));
-                        value[1] += Double.valueOf(m1.group(1));
+                        value.setPrimary(value.getPrimary() + Double.parseDouble(m1.group(1)));
+                        value.setRegular(value.getRegular() + Double.parseDouble(m1.group(1)));
                     }
                     if (m2.find()){
-                        value[0] += Double.valueOf(m2.group(1));
-                        value[1] += Double.valueOf(m2.group(6));
+                        value.setPrimary(value.getPrimary() + Double.parseDouble(m2.group(1)));
+                        value.setRegular(value.getRegular() + Double.parseDouble(m2.group(6)));
                     }
                     if (m3.find()){
-                        value[2] += Double.valueOf(m3.group(1));
+                        value.setPercent(value.getPercent() + Double.parseDouble(m3.group(1)));
                     }
                 }
             }
@@ -74,121 +73,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
 
     @Override
     public void function(Event e) {
-        if(isEnable()){
-            if (e instanceof PlayerItemHeldEvent) {
-                PlayerItemHeldEvent event = (PlayerItemHeldEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(((PlayerItemHeldEvent) e).getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof PlayerSwapHandItemsEvent) {
-                PlayerSwapHandItemsEvent event = (PlayerSwapHandItemsEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof PlayerDropItemEvent) {
-                PlayerDropItemEvent event = (PlayerDropItemEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof InventoryCloseEvent) {
-                InventoryCloseEvent event = (InventoryCloseEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof PlayerPickupItemEvent) {
-                PlayerPickupItemEvent event = (PlayerPickupItemEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof PlayerInteractEvent) {
-                PlayerInteractEvent event = (PlayerInteractEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof PlayerJoinEvent) {
-                PlayerJoinEvent event = (PlayerJoinEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getPlayer(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getPlayer().setMaxHealth(event.getPlayer().getHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            } else if (e instanceof CreatureSpawnEvent) {
-                CreatureSpawnEvent event = (CreatureSpawnEvent) e;
-                Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[0] + ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[1]*ArathothAPI.getNumAttributeValues(event.getEntity(),this.getName())[2]/100);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        if (health < config.getDouble("Settings.MinHealth")) {
-                            event.getEntity().setMaxHealth(config.getDouble("Settings.MinHealth"));
-                        } else {
-                            event.getEntity().setMaxHealth(event.getEntity().getMaxHealth() + health);
-                        }
-                    }
-                }.runTask(Arathoth.getInstance());
-            }
-        }
+        //懒得把代码放function了
         }
 
     @Override
@@ -230,58 +115,187 @@ public class AdditionalHealth implements NumberAttribute , Listener {
         if (event.isCancelled()) {
             return;
         }
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onPlayerSwapHandItemsEvent(PlayerSwapHandItemsEvent event){
         if (event.isCancelled()) {
             return;
         }
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onInventoryCloseEvent(InventoryCloseEvent event){
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onPlayerDropEvent(PlayerDropItemEvent event){
         if (event.isCancelled()) {
             return;
         }
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onPlayerPickupItemEvent(PlayerPickupItemEvent event){
         if (event.isCancelled()) {
             return;
         }
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onPlayerInteractEvent(PlayerInteractEvent event) {
         if (event.isCancelled()) {
             return;
         }
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onPlayerJoinEvent(PlayerJoinEvent event) {
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onPlayerQuitEvent(PlayerQuitEvent event) {
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getPlayer(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getPlayer());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getPlayer().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getPlayer().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onEntitySpawnEvent(CreatureSpawnEvent event)  {
         if (event.isCancelled()) {
             return;
         }
-        function(event);
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getEntity(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getEntity(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getEntity());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getEntity().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getEntity().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
     }
     @EventHandler
     void onEntityDeathEvent(EntityDeathEvent event) {
-        function(event);
-    }
+        Double health = Math.floor(config.getDouble("Settings.BaseHealth") + ArathothAPI.getNumAttributeData(event.getEntity(),this.getName()).getPrimary()*(1+ArathothAPI.getNumAttributeData(event.getEntity(),this.getName()).getPercent()/100));
+        new BukkitRunnable() {
 
+            @Override
+            public void run() {
+                ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent("AdditionalHealth",event,health,event.getEntity());
+                Bukkit.getPluginManager().callEvent(eve);
+                if (eve.getValue() < config.getDouble("Settings.MinHealth")) {
+                    event.getEntity().setMaxHealth(config.getDouble("Settings.MinHealth"));
+                } else {
+                    event.getEntity().setMaxHealth(eve.getValue());
+                }
+            }
+        }.runTask(Arathoth.getInstance());
+    }
 }

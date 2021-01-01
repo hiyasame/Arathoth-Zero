@@ -3,6 +3,8 @@ package ink.rainbowbridge.arathoth.Listener;
 import ink.rainbowbridge.arathoth.Arathoth;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +22,8 @@ public class AttributeMessageListener implements Listener {
         if(Arathoth.getInstance().getConfig().getBoolean("ActionBarMessageRemind",false)){
             if (e.getDamager() instanceof Player){
                 Player p = (Player)e.getDamager();
+                if(e.getEntity().getCustomName() != null)
+                p.spigot().sendMessage(ChatMessageType.ACTION_BAR,new TextComponent(ChatColor.translateAlternateColorCodes('&',"&7对 "+e.getEntity().getCustomName()+" &7造成了&4&l "+Arathoth.DecimalFormat.format(e.getDamage())+" &7点伤害!")));
             }
         }
     }

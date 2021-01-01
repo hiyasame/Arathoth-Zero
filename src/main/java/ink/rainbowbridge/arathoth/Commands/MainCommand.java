@@ -33,8 +33,8 @@ public class MainCommand implements CommandExecutor , TabCompleter {
                 sender.sendMessage("    &8- &7List registered attributes".replaceAll("&","§"));
                 sender.sendMessage("&8- &freload ".replaceAll("&","§"));
                 sender.sendMessage("    &8- &7Reload Configuration ".replaceAll("&","§"));
-                sender.sendMessage("&8- &fstatus ".replaceAll("&","§"));
-                sender.sendMessage("    &8- &7Status Information ".replaceAll("&","§"));
+                sender.sendMessage("&8- &fstatusinfo &7<player>".replaceAll("&","§"));
+                sender.sendMessage("    &8- &7View the player's Status Information ".replaceAll("&","§"));
                 sender.sendMessage("&8- &fdebug ".replaceAll("&","§"));
                 sender.sendMessage("    &8- &7Debug-Mode Switcher ".replaceAll("&","§"));
                 sender.sendMessage("&8- &fAbout ".replaceAll("&","§"));
@@ -49,7 +49,7 @@ public class MainCommand implements CommandExecutor , TabCompleter {
                     case RELOAD: {
                         return new Reload().command(sender,args);
                     }
-                    case STATUS:{
+                    case STATUSINFO:{
                         return new Status().command(sender,args);
                     }
                     case ABOUT:{
@@ -75,14 +75,14 @@ public class MainCommand implements CommandExecutor , TabCompleter {
             return null;
         }
         if(args.length == 0){
-            return Arrays.asList(new String[]{"listattr", "reload", "status", "about", "debug"});
+            return Arrays.asList("listattr", "reload", "status", "about", "debug");
         }
         return null;
     }
 
     private enum command {
 
-        LISTATTR, STATUS, RELOAD,
+        LISTATTR, STATUSINFO, RELOAD,
 
         DEBUG, ABOUT,ERROR
     }

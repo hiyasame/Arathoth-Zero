@@ -1,7 +1,5 @@
 package ink.rainbowbridge.arathoth.Attributes;
 
-
-import ink.rainbowbridge.arathoth.Arathoth;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;

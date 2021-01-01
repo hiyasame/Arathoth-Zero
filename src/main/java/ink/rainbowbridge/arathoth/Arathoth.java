@@ -1,11 +1,13 @@
 package ink.rainbowbridge.arathoth;
 
 import ink.rainbowbridge.arathoth.Attributes.AttributeLoader;
+import ink.rainbowbridge.arathoth.Attributes.SpecialAttribute;
 import ink.rainbowbridge.arathoth.Attributes.SubAttributes.*;
+import ink.rainbowbridge.arathoth.Bstats.Metrics;
 import ink.rainbowbridge.arathoth.Commands.MainCommand;
 import ink.rainbowbridge.arathoth.Listener.AttributeListener;
+import ink.rainbowbridge.arathoth.Listener.AttributeMessageListener;
 import ink.rainbowbridge.arathoth.Listener.StatusCommandListener;
-import ink.rainbowbridge.arathoth.Listener.StatusUpdateListeners;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.sub.LevelRequired;
 import ink.rainbowbridge.arathoth.Rules.sub.OwnderRequest;
@@ -22,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Random;
 
 
@@ -37,7 +40,7 @@ public final class Arathoth extends JavaPlugin {
 
     @Override
     public void onEnable() {
-       instance = this;
+        instance = this;
         if (!getDataFolder().exists())
             getDataFolder().mkdir();
         File file = new File(getDataFolder(), "config.yml");
@@ -57,35 +60,45 @@ public final class Arathoth extends JavaPlugin {
 
         isDebug = config.getBoolean("Debug");
         SendUtils.info("&fPlugin has been enabled");
-        if(hasPAPI()){
+        if (hasPAPI()) {
             SendUtils.info("&fPlaceholderAPI &8Hook!");
-        }
-        else{
+        } else {
             SendUtils.warn("PlaceHolderAPI &4not found!");
         }
         DrawFucker.fuck();
         boolean success = new PlaceHolderAPIHook(this).hook();
-        if(success){
+        if (success) {
             SendUtils.info("PlaceHolderHook Successfully");
-        }
-        else{
+        } else {
             SendUtils.warn("Failed to PlaceHolderHook");
         }
         registerDefault();
-        if (config.get("DecimalFormat") != null){
+        if (config.get("DecimalFormat") != null) {
             DecimalFormat = new DecimalFormat(config.getString("DecimalFormat"));
         }
-        if(new DurabilityFix().isEnable()){
-            durafix = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for(Player p : Bukkit.getOnlinePlayers()){
-                        new DurabilityFix().function(null,p);
-                    }
-                }
-            };
-            durafix.runTaskTimer(this,0,20L);
+        //TODO 处理DurabilityFix Task
+        HashMap<String, SpecialAttribute> attrs = new HashMap<>();
+        for (SpecialAttribute sa : AttributeLoader.RegisteredSpecial.keySet()) {
+            attrs.put(sa.getName(), sa);
         }
+        if (attrs.containsKey("DurabilityFix")) {
+            if (attrs.get("DurabilityFix").isEnable()) {
+                durafix = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            new DurabilityFix().function(null, p);
+                        }
+                    }
+                };
+                durafix.runTaskTimer(this, 0, 20L);
+            }
+        }
+        /**
+         * Bstats register
+         */
+        Metrics metrics = new Metrics(this, 9838);
+        metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
     }
 
     @Override
@@ -98,7 +111,7 @@ public final class Arathoth extends JavaPlugin {
     }
 
     public boolean hasPAPI(){
-        if (getServer().getPluginManager().getPlugin("PlaceHolderAPI") == null)
+        if (getServer().getPluginManager().isPluginEnabled("PlaceHolderAPI"))
             return false;
         else
             return true;
@@ -118,9 +131,9 @@ public final class Arathoth extends JavaPlugin {
 
     public void registerDefault(){
         //TODO 监听器注册
-        Bukkit.getPluginManager().registerEvents(new StatusUpdateListeners(),this);
         Bukkit.getPluginManager().registerEvents(new AttributeListener(),this);
         Bukkit.getPluginManager().registerEvents(new StatusCommandListener(),this);
+        Bukkit.getPluginManager().registerEvents(new AttributeMessageListener(),this);
         //TODO 命令&TabCompleter注册
         Bukkit.getPluginCommand("Arathoth").setTabCompleter(new MainCommand());
         Bukkit.getPluginCommand("Arathoth").setExecutor(new MainCommand());
@@ -146,6 +159,10 @@ public final class Arathoth extends JavaPlugin {
         AttributeLoader.Register(new PlayerTrueDamage(),this);
         AttributeLoader.Register(new TrueDamage(),this);
         AttributeLoader.Register(new Regen(),this);
+        AttributeLoader.Register(new ShootArmor(),this);
+        AttributeLoader.Register(new AttackSpeedInhabit(),this);
+        AttributeLoader.Register(new DurabilityFix(),this);
+        AttributeLoader.Register(new AttackRange(),this);
         //TODO 本体规则注册
         RulesManager.register(this,new LevelRequired());
         RulesManager.register(this,new OwnderRequest());

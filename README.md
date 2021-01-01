@@ -64,3 +64,12 @@ Why you named it so strange?
 - 修复了AdditionalHealth导致的报错
 - 优化API中获取属性值方法逻辑，规避了一些特殊情况下的NullPointerException
 - SpecialAttribute抽象类新增一条抽象方法 : String getPlaceHolder(Player p) - papi返回这个方法返回的值
+
+2021.1.1 0.1.3 Update
+- 基本重写，现在属性不用hashmap储存
+- 删除了statusupdateevent，现在靠监听新的事件操作属性 - ArathothStatusExecuteEvent
+- 新增了一个specialAttribute attackrange 攻击范围
+- 弓箭属性现在使用元数据储存
+- ActionbarRemind功能有了
+- 修复AttackSpeedRank卡线程的问题
+- 修复了绝大多数NPE

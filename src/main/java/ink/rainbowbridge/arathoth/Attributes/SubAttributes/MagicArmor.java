@@ -3,9 +3,12 @@ package ink.rainbowbridge.arathoth.Attributes.SubAttributes;
 import ink.rainbowbridge.arathoth.API.ArathothAPI;
 import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.NumberAttribute;
+import ink.rainbowbridge.arathoth.Attributes.data.AttributeData;
+import ink.rainbowbridge.arathoth.Events.ArathothStatusExecuteEvent;
 import ink.rainbowbridge.arathoth.Utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.Event;
@@ -17,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,26 +36,28 @@ public class MagicArmor implements NumberAttribute, Listener {
     private boolean isEnable;
 
     @Override
-    public Double[] parseNumber(ItemStack item) {
-        //TODO 获取数值属性
-        Double[] value = {0.0D,0.0D,0.0D};
+    public AttributeData parseNumber(List<String> uncoloredlores) {
+        /*
+         * 0.1.3 时代新parse方法
+         */
+        AttributeData value = new AttributeData();
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (String str : ItemUtils.getUncoloredLore(item)) {
+                for (String str : uncoloredlores) {
                     Matcher m1 = Primary.matcher(str);
                     Matcher m2 = Regular.matcher(str);
                     Matcher m3 = Percent.matcher(str);
                     if(m1.find()){
-                        value[0] += Double.valueOf(m1.group(1));
-                        value[1] += Double.valueOf(m1.group(1));
+                        value.setPrimary(value.getPrimary() + Double.parseDouble(m1.group(1)));
+                        value.setRegular(value.getRegular() + Double.parseDouble(m1.group(1)));
                     }
                     if (m2.find()){
-                        value[0] += Double.valueOf(m2.group(1));
-                        value[1] += Double.valueOf(m2.group(6));
+                        value.setPrimary(value.getPrimary() + Double.parseDouble(m2.group(1)));
+                        value.setRegular(value.getRegular() + Double.parseDouble(m2.group(6)));
                     }
                     if (m3.find()){
-                        value[2] += Double.valueOf(m3.group(1));
+                        value.setPercent(value.getPercent() + Double.parseDouble(m3.group(1)));
                     }
                 }
             }
@@ -64,8 +70,10 @@ public class MagicArmor implements NumberAttribute, Listener {
         if (e instanceof EntityDamageEvent) {
             EntityDamageEvent eve = (EntityDamageEvent) e;
                 if (eve.getCause() == EntityDamageEvent.DamageCause.MAGIC) {
-                    Double value = ArathothAPI.SolveAttributeValue(ArathothAPI.getNumAttributeValues((LivingEntity) eve.getEntity(), getName()));
-                    eve.setDamage(eve.getDamage() - value);
+                    Double value = ArathothAPI.getNumAttributeData((LivingEntity) eve.getEntity(), getName()).solveData();
+                    ArathothStatusExecuteEvent event = new ArathothStatusExecuteEvent(this.getName(),e,value,(LivingEntity) eve.getEntity());
+                    Bukkit.getPluginManager().callEvent(event);
+                    eve.setDamage(eve.getDamage() - event.getValue());
             }
         }
     }

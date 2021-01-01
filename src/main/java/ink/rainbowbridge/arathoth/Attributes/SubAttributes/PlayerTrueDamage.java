@@ -3,6 +3,8 @@ package ink.rainbowbridge.arathoth.Attributes.SubAttributes;
 import ink.rainbowbridge.arathoth.API.ArathothAPI;
 import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.NumberAttribute;
+import ink.rainbowbridge.arathoth.Attributes.data.AttributeData;
+import ink.rainbowbridge.arathoth.Events.ArathothStatusExecuteEvent;
 import ink.rainbowbridge.arathoth.Utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,26 +36,28 @@ public class PlayerTrueDamage implements NumberAttribute, Listener {
     private boolean isEnable;
 
     @Override
-    public Double[] parseNumber(ItemStack item) {
-        //TODO 获取数值属性
-        Double[] value = {0.0D,0.0D,0.0D};
+    public AttributeData parseNumber(List<String> uncoloredlores) {
+        /*
+         * 0.1.3 时代新parse方法
+         */
+        AttributeData value = new AttributeData();
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (String str : ItemUtils.getUncoloredLore(item)) {
+                for (String str : uncoloredlores) {
                     Matcher m1 = Primary.matcher(str);
                     Matcher m2 = Regular.matcher(str);
                     Matcher m3 = Percent.matcher(str);
                     if(m1.find()){
-                        value[0] += Double.valueOf(m1.group(1));
-                        value[1] += Double.valueOf(m1.group(1));
+                        value.setPrimary(value.getPrimary() + Double.parseDouble(m1.group(1)));
+                        value.setRegular(value.getRegular() + Double.parseDouble(m1.group(1)));
                     }
                     if (m2.find()){
-                        value[0] += Double.valueOf(m2.group(1));
-                        value[1] += Double.valueOf(m2.group(6));
+                        value.setPrimary(value.getPrimary() + Double.parseDouble(m2.group(1)));
+                        value.setRegular(value.getRegular() + Double.parseDouble(m2.group(6)));
                     }
                     if (m3.find()){
-                        value[2] += Double.valueOf(m3.group(1));
+                        value.setPercent(value.getPercent() + Double.parseDouble(m3.group(1)));
                     }
                 }
             }
@@ -66,20 +71,24 @@ public class PlayerTrueDamage implements NumberAttribute, Listener {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
             if (event.getEntity() instanceof Player) {
                 if (event.getDamager() instanceof LivingEntity) {
-                    Double damage = ArathothAPI.SolveAttributeValue(ArathothAPI.getNumAttributeValues((LivingEntity) event.getDamager(), getName()));
-                    if (((LivingEntity) ((event.getEntity()))).getMaxHealth() <= damage) {
+                    Double damage = ArathothAPI.getNumAttributeData((LivingEntity) event.getDamager(), getName()).solveData();
+                    ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent(this.getName(),e,damage,(LivingEntity) event.getDamager());
+                    Bukkit.getPluginManager().callEvent(eve);
+                    if (((LivingEntity) ((event.getEntity()))).getMaxHealth() <= eve.getValue()) {
                         ((LivingEntity) ((event.getEntity()))).setHealth(0.0D);
                     } else {
-                        ((LivingEntity) ((event.getEntity()))).setHealth(((LivingEntity) ((event.getEntity()))).getHealth() - damage);
+                        ((LivingEntity) ((event.getEntity()))).setHealth(((LivingEntity) ((event.getEntity()))).getHealth() - eve.getValue());
                     }
                 } else if (event.getDamager() instanceof Arrow) {
                     //TODO 处理弓箭属性，将data当中的属性实现
                     if(((Arrow) event.getDamager()).getShooter() instanceof LivingEntity) {
-                        Double damage = ArathothAPI.SolveAttributeValue(ArathothAPI.getProjectileNum(event.getDamager(), getName()));
-                        if (((LivingEntity) ((event.getEntity()))).getMaxHealth() <= damage) {
+                        Double damage = ArathothAPI.getArrowData(event.getDamager(), getName()).solveData();
+                        ArathothStatusExecuteEvent eve = new ArathothStatusExecuteEvent(this.getName(),e,damage,(LivingEntity) (((Arrow) event.getDamager()).getShooter()));
+                        Bukkit.getPluginManager().callEvent(eve);
+                        if (((LivingEntity) ((event.getEntity()))).getMaxHealth() <= eve.getValue()) {
                             ((LivingEntity) ((event.getEntity()))).setHealth(0.0D);
                         } else {
-                            ((LivingEntity) ((event.getEntity()))).setHealth(((LivingEntity) ((event.getEntity()))).getHealth() - damage);
+                            ((LivingEntity) ((event.getEntity()))).setHealth(((LivingEntity) ((event.getEntity()))).getHealth() - eve.getValue());
                         }
                     }
                 }
