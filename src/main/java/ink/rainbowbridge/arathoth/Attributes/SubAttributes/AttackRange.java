@@ -52,18 +52,28 @@ public class AttackRange implements SpecialAttribute, Listener {
             if (e instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
                 if (event.getDamager() instanceof LivingEntity) {
-                    List<Entity> entities = event.getDamager().getNearbyEntities((Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager()));
+                    List<Entity> entities = new ArrayList<>();
+                    try{
+                        entities.addAll(event.getDamager().getNearbyEntities((Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager())));
+                        entities.remove(event.getDamager());
+                        entities.remove(event.getEntity());
+                    }catch (NullPointerException ignored){}
                     for(Entity en : entities){
                         if(en instanceof LivingEntity){
-                            ((LivingEntity) en).damage(event.getDamage(),event.getDamager());
+                            ((LivingEntity) en).damage(event.getDamage());
                         }
                     }
                 }
                 else if (event.getDamager() instanceof Arrow){
-                    List<Entity> entities = event.getDamager().getNearbyEntities((Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager()));
+                    List<Entity> entities = new ArrayList<>();
+                    try{
+                        entities.addAll(event.getDamager().getNearbyEntities((Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager()),(Double) parseValue((LivingEntity) event.getDamager())));
+                        entities.remove(event.getDamager());
+                        entities.remove(event.getEntity());
+                    }catch (NullPointerException ignored){}
                     for(Entity en : entities){
                         if(en instanceof LivingEntity){
-                            ((LivingEntity) en).damage(event.getDamage(),event.getDamager());
+                            ((LivingEntity) en).damage(event.getDamage());
                         }
                     }
                 }

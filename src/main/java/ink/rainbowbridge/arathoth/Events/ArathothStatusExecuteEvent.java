@@ -1,5 +1,6 @@
 package ink.rainbowbridge.arathoth.Events;
 
+import ink.rainbowbridge.arathoth.Arathoth;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -35,6 +36,7 @@ public class ArathothStatusExecuteEvent extends Event implements Cancellable {
         this.trigger = trigger;
         this.AttributeName = AttributeName;
         this.value = value;
+        Arathoth.Debug("ExecuteAttribute: &f"+AttributeName+" &7Value: &f"+value);
     }
 
     public Double getValue() {

@@ -40,7 +40,6 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
     private Pattern pattern;
     private FileConfiguration config;
     private HashMap<String,Integer> rankList;
-    private HashMap<UUID, Material> CDmap;
     @Override
     public Object parseValue(LivingEntity e) {
         if(e instanceof Player){
@@ -71,12 +70,10 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
                 if (event.getDamager() instanceof Player) {
                     Player p = (Player) event.getDamager();
                     String rank = (String) parseValue(p);
-                    ArathothAttackCDEvent eve = new ArathothAttackCDEvent(p, rankList.get(rank),(LivingEntity) event.getEntity());
-                    Bukkit.getPluginManager().callEvent(eve);
-                    if (eve.getCD() > 0) {
-                        eve.getPlayer().setCooldown(eve.getPlayer().getInventory().getItemInMainHand().getType(), eve.getCD());
-                        CDmap.put(eve.getPlayer().getUniqueId(),eve.getPlayer().getInventory().getItemInMainHand().getType());
-                        Arathoth.Debug("触发攻击冷却 (AttackCD) &f[" + eve.getPlayer().getName() + "] [" + eve.getCD() + "]");
+                    int value =rankList.get(rank) - ArathothAPI.getNumAttributeData((LivingEntity)event.getEntity(),"AttackSpeedInhabit").getPrimary().intValue();
+                    if (rankList.get(rank) - ArathothAPI.getNumAttributeData((LivingEntity)event.getEntity(),"AttackSpeedInhabit").getPrimary().intValue() > 0) {
+                        p.setCooldown(p.getInventory().getItemInMainHand().getType(),value);
+                        Arathoth.Debug("触发攻击冷却 (AttackCD) &f[" + p.getName() + "] [" + value + "]");
                     }
                 }
             }
@@ -120,13 +117,6 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
         for(String str : config.getConfigurationSection(getName()+".Settings.RegisterRank").getKeys(false)){
             rankList.put(str,config.getInt(getName()+".Settings.RegisterRank."+str));
         }
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-            CDmap = new HashMap<>();
-            Arathoth.Debug("清理攻速数据.....");
-            }
-        }.runTaskTimer(Arathoth.getInstance(),12000,12000);
     }
 
     @Override
@@ -138,8 +128,7 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
     public void onAttackCD(EntityDamageByEntityEvent e){
         if (e.getDamager() instanceof Player){
             Player p = (Player)e.getDamager();
-            if (CDmap.containsKey(p.getUniqueId())) {
-                if (p.getCooldown(CDmap.get(p.getUniqueId())) == 0) {
+                if (p.getCooldown(p.getInventory().getItemInMainHand().getType()) == 0) {
                     function(e, null);
                 }
                 else{
@@ -151,4 +140,3 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
             }
         }
     }
-}

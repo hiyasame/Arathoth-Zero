@@ -95,6 +95,7 @@ public class AttributeLoader {
                     }
                 }
             }
+            Arathoth.Debug("execute lore length:&f "+uncoloredlores.size());
             return uncoloredlores;
         }
         else{

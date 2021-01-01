@@ -70,7 +70,7 @@ public class MonsterArmor implements NumberAttribute, Listener {
     public void function(Event e) {
         if (e instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent eve = (EntityDamageByEntityEvent) e;
-            if(eve.getDamager() instanceof Monster) {
+            if(eve.getEntity() instanceof Monster) {
                 if (eve.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                     Double value = ArathothAPI.getNumAttributeData((LivingEntity) eve.getEntity(), getName()).solveData();
                     ArathothStatusExecuteEvent event = new ArathothStatusExecuteEvent(this.getName(),e,value,(LivingEntity) eve.getEntity());
@@ -100,9 +100,9 @@ public class MonsterArmor implements NumberAttribute, Listener {
         }
         Bukkit.getPluginManager().registerEvents(this,Arathoth.getInstance());
 
-        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((\\-|\\+)?(\\d+(\\.\\d+)?))"));
-        Regular = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((\\-|\\+)?(\\d+(\\.\\d+)?))(\\-)(\\d+(\\.\\d+)?)"));
-        Percent = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((\\-|\\+)?(\\d+(\\.\\d+)?))%"));
+        Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))"));
+        Regular = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))(\\-)(\\d+(?:\\.\\d+)?)"));
+        Percent = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))%"));
         isEnable = config.getBoolean(getName()+".Enable",false);
 
     }

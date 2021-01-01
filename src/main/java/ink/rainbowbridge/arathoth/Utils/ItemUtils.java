@@ -7,7 +7,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemUtils {
     public static boolean isNull(ItemStack item) {
@@ -34,18 +36,17 @@ public class ItemUtils {
         return true;
     }
 
-    public static List<String> getUncoloredLore(ItemStack item){
-        List<String> lore = new ArrayList<>();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(!isNull(item) && item.hasItemMeta()) {
-                    for (String str : item.getItemMeta().getLore()) {
-                        lore.add(ChatColor.stripColor(str));
-                    }
+    public static List<String> getUncoloredLore(ItemStack item) {
+        if (!isNull(item)) {
+            if (item.hasItemMeta()) {
+                if (item.getItemMeta().hasLore()) {
+                    List<String> lores = item.getItemMeta().getLore().stream().map(x -> ChatColor.stripColor(x)).collect(Collectors.toList());
+                    return lores;
                 }
+                return Arrays.asList(" ");
             }
-        }.runTaskAsynchronously(Arathoth.getInstance());
-        return lore;
+            return Arrays.asList(" ");
+        }
+        return Arrays.asList(" ");
     }
 }

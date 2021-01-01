@@ -35,7 +35,9 @@ public class Status implements SubCommandExecutor {
                     return true;
                 }
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7&l[&f&lArathoth&7&l] &7参数错误"));
+        else {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&l[&f&lArathoth&7&l] &7参数错误"));
+        }
         return true;
             }
         }

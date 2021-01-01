@@ -73,3 +73,5 @@ Why you named it so strange?
 - ActionbarRemind功能有了
 - 修复AttackSpeedRank卡线程的问题
 - 修复了绝大多数NPE
+- 但是你妈的NumberAttribute的正则式死活匹配不出来
+- 我裂开了，求求哪位大佬帮我看看吧，这bug我实在de不动了

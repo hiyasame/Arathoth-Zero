@@ -3,6 +3,7 @@ package ink.rainbowbridge.arathoth.Rules.sub;
 import ink.rainbowbridge.arathoth.Rules.RulesManager;
 import ink.rainbowbridge.arathoth.Rules.SubRules;
 import ink.rainbowbridge.arathoth.Utils.ItemUtils;
+import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -49,6 +50,7 @@ public class PermRequest implements SubRules {
                         return true;
                     }
                     else{
+                        SendUtils.send(p,"你没有 "+item.getItemMeta().getDisplayName()+"&7的使用权");
                         return false;
                     }
                 }

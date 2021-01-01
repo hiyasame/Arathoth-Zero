@@ -109,9 +109,12 @@ public class DurabilityFix implements SpecialAttribute {
     public short parseItemValue(ItemStack item){
         int value = 0;
         for(String str : ItemUtils.getUncoloredLore(item)){
-            Matcher m = pattern.matcher(str);
-            if (m.find()){
-                 value = Integer.parseInt(m.group(1));
+            try {
+                Matcher m = pattern.matcher(str);
+                if (m.find()) {
+                    value = Integer.parseInt(m.group(1));
+                }
+            }catch (NullPointerException npe){
             }
         }
         return (short)value;
