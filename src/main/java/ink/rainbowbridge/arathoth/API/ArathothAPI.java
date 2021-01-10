@@ -184,6 +184,6 @@ public class ArathothAPI {
      * @return 属性data
      */
     public static AttributeData getArrowData(Entity e,String name){
-        return (AttributeData) e.getMetadata(name);
+        return (AttributeData) Arathoth.getMetadata(e,name,Arathoth.getInstance());
     }
 }

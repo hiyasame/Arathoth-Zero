@@ -75,3 +75,8 @@ Why you named it so strange?
 - 修复了绝大多数NPE
 - 但是你妈的NumberAttribute的正则式死活匹配不出来
 - 我裂开了，求求哪位大佬帮我看看吧，这bug我实在de不动了
+
+2021.1.10 0.1.4 Update
+- 匹配不到lore的问题终究还是解决了，就是additionhealth的实现方式还是有问题
+- 修了几万个报错
+- 美化命令帮助信息

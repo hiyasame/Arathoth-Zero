@@ -4,6 +4,7 @@ import ink.rainbowbridge.arathoth.API.ArathothAPI;
 import ink.rainbowbridge.arathoth.Arathoth;
 import ink.rainbowbridge.arathoth.Attributes.SpecialAttribute;
 import ink.rainbowbridge.arathoth.Utils.ItemUtils;
+import ink.rainbowbridge.arathoth.Utils.SendUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
@@ -17,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,6 +93,7 @@ public class DurabilityFix implements SpecialAttribute {
         }
         pattern = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "(\\d+)"));
         isEnable = config.getBoolean(getName()+".Enable",false);
+        SendUtils.info(pattern.toString());
 
 
     }
@@ -108,13 +111,16 @@ public class DurabilityFix implements SpecialAttribute {
      */
     public short parseItemValue(ItemStack item){
         int value = 0;
-        for(String str : ItemUtils.getUncoloredLore(item)){
-            try {
-                Matcher m = pattern.matcher(str);
+        if(ItemUtils.isApproveItem(item)) {
+            for (String str : ItemUtils.getUncoloredLore(item)) {
+                /*
+                // 空指针到底问题出在哪里?
+                Matcher m = pattern.matcher(str); //空指针行
                 if (m.find()) {
                     value = Integer.parseInt(m.group(1));
+                    break;
                 }
-            }catch (NullPointerException npe){
+                */
             }
         }
         return (short)value;

@@ -63,20 +63,18 @@ public class AttributeLoader {
             List<ItemStack> items = new ArrayList<>();
             HashMap<Integer, String> Slots = SlotsManager.getSlots();
             for (Integer i : SlotsManager.getSlots().keySet()) {
-                if (p.getInventory().getItem(i) != null && p.getInventory().getItem(i).getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItem(i).getItemMeta().getLore().get(0)).contains(Slots.get(i))) {
+                if (ItemUtils.isApproveItem(p.getInventory().getItem(i)) && p.getInventory().getItem(i).getItemMeta().hasLore() && ChatColor.stripColor(p.getInventory().getItem(i).getItemMeta().getLore().get(0)).contains(Slots.get(i))) {
                     items.add(p.getInventory().getItem(i));
                 }
             }
-            if (p.getInventory().getItemInMainHand().getItemMeta() != null) {
-                if (p.getInventory().getItemInMainHand().getItemMeta().hasLore()) {
-                    if (ChatColor.stripColor(p.getInventory().getItemInMainHand().getItemMeta().getLore().get(0)).contains(Arathoth.getInstance().getConfig().getString("Slots.MainHand"))) {
-                        items.add(p.getInventory().getItemInMainHand());
-                    }
+            if(ItemUtils.isApproveItem(p.getInventory().getItemInMainHand())) {
+                if (ChatColor.stripColor(p.getInventory().getItemInMainHand().getItemMeta().getLore().get(0)).contains(Arathoth.getInstance().getConfig().getString("Slots.MainHand"))) {
+                    items.add(p.getInventory().getItemInMainHand());
                 }
             }
             if (!items.isEmpty()) {
                 for (ItemStack item : items) {
-                    if (ItemUtils.hasLore(item)) {
+                    if (ItemUtils.isApproveItem(item)) {
                         //TODO RulesPassorNot
                         boolean pass = true;
                         if (!RulesManager.Rules.isEmpty()) {

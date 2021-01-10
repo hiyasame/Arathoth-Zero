@@ -23,22 +23,23 @@ public class MainCommand implements CommandExecutor , TabCompleter {
         else{
             if(args.length == 0){
                 sender.sendMessage(" ".replaceAll("&","§"));
-                sender.sendMessage(("&f&lArathoth Zero   &7"+ Arathoth.getInstance().getDescription().getVersion()).replaceAll("&","§"));
-                sender.sendMessage(" ".replaceAll("&","§"));
-                sender.sendMessage("&7MainCommands:".replaceAll("&","§"));
-                sender.sendMessage("&8- &fArathoth &7/ &fAra".replaceAll("&","§"));
-                sender.sendMessage(" ".replaceAll("&","§"));
-                sender.sendMessage("&7SubCommands: ".replaceAll("&","§"));
-                sender.sendMessage("&8- &flistattr ".replaceAll("&","§"));
-                sender.sendMessage("    &8- &7List registered attributes".replaceAll("&","§"));
-                sender.sendMessage("&8- &freload ".replaceAll("&","§"));
-                sender.sendMessage("    &8- &7Reload Configuration ".replaceAll("&","§"));
-                sender.sendMessage("&8- &fstatusinfo &7<player>".replaceAll("&","§"));
-                sender.sendMessage("    &8- &7View the player's Status Information ".replaceAll("&","§"));
-                sender.sendMessage("&8- &fdebug ".replaceAll("&","§"));
-                sender.sendMessage("    &8- &7Debug-Mode Switcher ".replaceAll("&","§"));
-                sender.sendMessage("&8- &fAbout ".replaceAll("&","§"));
-                sender.sendMessage("    &8- &7About Author ".replaceAll("&","§"));
+                sender.sendMessage(("&8&l▼&7&l&m┉┉┉┉┉&8&l[ &f&lArathoth &e&l"+ Arathoth.getInstance().getDescription().getVersion()).replaceAll("&","§").replace("-SNAPSHOT","") + " &8&l]&7&l&m┉┉┉┉┉&8&l▼".replaceAll("&","§"));
+                sender.sendMessage(" &8&l●&7MainCommands: &f/Arathoth [arguments...]".replaceAll("&","§"));
+                sender.sendMessage(" &8&l●&7SubCommands: ".replaceAll("&","§"));
+                sender.sendMessage("    &7&l┗ &fListattr ".replaceAll("&","§"));
+                sender.sendMessage("        &8▶ &7List registered attributes".replaceAll("&","§"));
+                sender.sendMessage("    &7&l┗ &fReload ".replaceAll("&","§"));
+                sender.sendMessage("        &8▶ &7Reload Configuration ".replaceAll("&","§"));
+                sender.sendMessage("    &7&l┗ &fStatusInfo &7<player>".replaceAll("&","§"));
+                sender.sendMessage("        &8▶ &7View the player's Status Information ".replaceAll("&","§"));
+                sender.sendMessage("    &7&l┗ &fDebug ".replaceAll("&","§"));
+                sender.sendMessage("        &8▶ &7Debug-Mode Switcher ".replaceAll("&","§"));
+                sender.sendMessage("    &7&l┗ &fAbout ".replaceAll("&","§"));
+                sender.sendMessage("        &8▶ &7About Author ".replaceAll("&","§"));
+                sender.sendMessage(" &8&l●&7SpecialCommands: ".replaceAll("&","§"));
+                sender.sendMessage("    &7&l┗ &f/".replaceAll("&","§") + Arathoth.getInstance().getConfig().getString("StatusInfo.Command"));
+                sender.sendMessage("        &8▶ &7list your status information,you can set usage in config.yml".replaceAll("&","§"));
+                sender.sendMessage("&8&l▲&7&l&m┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉&8&l▲".replaceAll("&","§"));
                 sender.sendMessage(" ".replaceAll("&","§"));
             }
             else {

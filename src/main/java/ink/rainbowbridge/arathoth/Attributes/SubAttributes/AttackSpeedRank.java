@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
  * 现在可以通过监听AttackC事件来修改一切参数
  *
  * 0.1.3 修复卡线程
+ * 0.1.4 使用metadata储存冷却材质
  *
  * @author 寒雨
  * @create 2020/12/12 13:03
@@ -73,6 +75,7 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
                     int value =rankList.get(rank) - ArathothAPI.getNumAttributeData((LivingEntity)event.getEntity(),"AttackSpeedInhabit").getPrimary().intValue();
                     if (rankList.get(rank) - ArathothAPI.getNumAttributeData((LivingEntity)event.getEntity(),"AttackSpeedInhabit").getPrimary().intValue() > 0) {
                         p.setCooldown(p.getInventory().getItemInMainHand().getType(),value);
+                        p.setMetadata("CDItem",new FixedMetadataValue(Arathoth.getInstance(),p.getInventory().getItemInMainHand().getType()));
                         Arathoth.Debug("触发攻击冷却 (AttackCD) &f[" + p.getName() + "] [" + value + "]");
                     }
                 }
@@ -128,15 +131,18 @@ public class AttackSpeedRank implements SpecialAttribute, Listener {
     public void onAttackCD(EntityDamageByEntityEvent e){
         if (e.getDamager() instanceof Player){
             Player p = (Player)e.getDamager();
-                if (p.getCooldown(p.getInventory().getItemInMainHand().getType()) == 0) {
-                    function(e, null);
+                if (p.hasMetadata("CDItem")) {
+                    try {
+                        if (p.getCooldown((Material) Arathoth.getMetadata(p, "CDItem", Arathoth.getInstance())) == 0)
+                            function(e, null);
+                        else {
+                            e.setCancelled(true);
+                        }
+                    }catch(Exception ex){}
                 }
                 else{
-                    e.setCancelled(true);
+                    function(e, null);
                 }
-            }
-            else{
-                function(e,null);
             }
         }
     }

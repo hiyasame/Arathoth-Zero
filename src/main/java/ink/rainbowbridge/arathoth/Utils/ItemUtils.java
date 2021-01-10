@@ -37,16 +37,14 @@ public class ItemUtils {
     }
 
     public static List<String> getUncoloredLore(ItemStack item) {
-        if (!isNull(item)) {
-            if (item.hasItemMeta()) {
-                if (item.getItemMeta().hasLore()) {
-                    List<String> lores = item.getItemMeta().getLore().stream().map(x -> ChatColor.stripColor(x)).collect(Collectors.toList());
-                    return lores;
-                }
-                return Arrays.asList(" ");
-            }
-            return Arrays.asList(" ");
+        if(isApproveItem(item)) {
+            List<String> lores = item.getItemMeta().getLore().stream().map(x -> ChatColor.stripColor(x)).collect(Collectors.toList());
+            return lores;
         }
         return Arrays.asList(" ");
+    }
+
+    public static boolean isApproveItem(ItemStack item) {
+        return (!isNull(item) && item.getItemMeta().hasLore());
     }
 }

@@ -40,27 +40,22 @@ public class LifeSteal implements NumberAttribute, Listener {
          * 0.1.3 时代新parse方法
          */
         AttributeData value = new AttributeData();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (String str : uncoloredlores) {
-                    Matcher m1 = Primary.matcher(str);
-                    Matcher m2 = Regular.matcher(str);
-                    Matcher m3 = Percent.matcher(str);
-                    if(m1.find()){
-                        value.setPrimary(value.getPrimary() + Double.parseDouble(m1.group(1)));
-                        value.setRegular(value.getRegular() + Double.parseDouble(m1.group(1)));
-                    }
-                    if (m2.find()){
-                        value.setPrimary(value.getPrimary() + Double.parseDouble(m2.group(1)));
-                        value.setRegular(value.getRegular() + Double.parseDouble(m2.group(6)));
-                    }
-                    if (m3.find()){
-                        value.setPercent(value.getPercent() + Double.parseDouble(m3.group(1)));
-                    }
-                }
+        for (String str : uncoloredlores) {
+            Matcher m1 = Primary.matcher(str);
+            Matcher m2 = Regular.matcher(str);
+            Matcher m3 = Percent.matcher(str);
+            if(m1.find()){
+                value.setPrimary(value.getPrimary() + Double.valueOf(m1.group(1)));
+                value.setRegular(value.getRegular() + Double.valueOf(m1.group(1)));
             }
-        }.runTaskAsynchronously(Arathoth.getInstance());
+            if (m2.find()){
+                value.setPrimary(value.getPrimary() + Double.valueOf(m2.group(1)));
+                value.setRegular(value.getRegular() + Double.valueOf(m2.group(6)));
+            }
+            if (m3.find()){
+                value.setPercent(value.getPercent() + Double.valueOf(m3.group(1)));
+            }
+        }
         return value;
     }
 

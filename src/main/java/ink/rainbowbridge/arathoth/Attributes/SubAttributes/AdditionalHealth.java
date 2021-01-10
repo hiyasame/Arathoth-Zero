@@ -47,9 +47,6 @@ public class AdditionalHealth implements NumberAttribute , Listener {
          * 0.1.3 时代新parse方法
          */
         AttributeData value = new AttributeData();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
                 for (String str : uncoloredlores) {
                     Matcher m1 = Primary.matcher(str);
                     Matcher m2 = Regular.matcher(str);
@@ -66,8 +63,6 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                         value.setPercent(value.getPercent() + Double.valueOf(m3.group(1)));
                     }
                 }
-            }
-        }.runTaskAsynchronously(Arathoth.getInstance());
         return value;
     }
 
@@ -99,9 +94,8 @@ public class AdditionalHealth implements NumberAttribute , Listener {
 
         Primary = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))"));
         Regular = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))(\\-)(\\d+(?:\\.\\d+)?)"));
-        Percent = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))%"));
+        Percent = Pattern.compile(config.getString(getName()+".Pattern").replace("[VALUE]", "((?:\\-|\\+)?(\\d+(?:\\.\\d+)?))\\%"));
         isEnable = config.getBoolean(getName()+".Enable",false);
-
     }
 
     @Override
@@ -110,7 +104,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
     }
 
 //TODO 属性类内监听，不再集中处理，优先级用现成的EventPriority
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerItemHeldEvent(PlayerItemHeldEvent event){
         if (event.isCancelled()) {
             return;
@@ -131,9 +125,9 @@ public class AdditionalHealth implements NumberAttribute , Listener {
                     event.getPlayer().setMaxHealth(eve.getValue());
                 }
             }
-        }.runTask(Arathoth.getInstance());
+        }.runTaskLater(Arathoth.getInstance(),2L);
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerSwapHandItemsEvent(PlayerSwapHandItemsEvent event){
         if (event.isCancelled()) {
             return;
@@ -156,7 +150,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onInventoryCloseEvent(InventoryCloseEvent event){
         if(!isEnable){
             return;
@@ -176,7 +170,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerDropEvent(PlayerDropItemEvent event){
         if (event.isCancelled()) {
             return;
@@ -199,7 +193,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerPickupItemEvent(PlayerPickupItemEvent event){
         if (event.isCancelled()) {
             return;
@@ -222,7 +216,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerInteractEvent(PlayerInteractEvent event) {
         if (event.isCancelled()) {
             return;
@@ -245,7 +239,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerJoinEvent(PlayerJoinEvent event) {
         if(!isEnable){
             return;
@@ -265,7 +259,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerQuitEvent(PlayerQuitEvent event) {
         if(!isEnable){
             return;
@@ -285,7 +279,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onEntitySpawnEvent(CreatureSpawnEvent event)  {
         if (event.isCancelled()) {
             return;
@@ -308,7 +302,7 @@ public class AdditionalHealth implements NumberAttribute , Listener {
             }
         }.runTask(Arathoth.getInstance());
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     void onEntityDeathEvent(EntityDeathEvent event) {
         if(!isEnable){
             return;
