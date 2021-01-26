@@ -1,3 +1,8 @@
+# 弃坑
+* 因为代码太烂不忍心继续写下去了，完全重写，项目[Arathoth-I](https://github.com/Freeze003/Arathoth-I)
+
+
+
 # Arathoth-Zero
 What is Arathoth?
 - 克苏鲁神话: 旧日的支配者
